@@ -1,0 +1,2 @@
+# -zmir-yedek
+Yedek
