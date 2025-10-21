@@ -8,8 +8,6 @@ import {
   Church,
   ShoppingBag,
   Camera,
-  X,
-  Heart,
   MapPin,
 } from "lucide-react";
 
@@ -102,11 +100,6 @@ if (
   const style = document.createElement("style");
   style.id = "custom-marker-styles";
   style.textContent = `
-    @keyframes markerPulse {
-      0%, 100% { transform: scale(1); }
-      50% { transform: scale(1.05); }
-    }
-    
     .cultural-marker {
       width: 40px;
       height: 40px;
@@ -115,35 +108,17 @@ if (
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      transition: transform 0.2s ease, box-shadow 0.2s ease;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
       border: 3px solid white;
-      position: relative;
-    }
-    
-    .cultural-marker::before {
-      content: '';
-      position: absolute;
-      inset: -8px;
-      border-radius: 50%;
-      background: radial-gradient(circle, currentColor 0%, transparent 70%);
-      opacity: 0;
-      transition: opacity 0.3s ease;
     }
     
     .cultural-marker:hover {
-      transform: scale(1.15) translateY(-2px);
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
-    }
-    
-    .cultural-marker:hover::before {
-      opacity: 0.15;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
     }
     
     .cultural-marker.active {
-      transform: scale(1.2) translateY(-4px);
-      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
-      border-width: 3px;
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+      border-width: 4px;
     }
     
     .cultural-marker svg {
@@ -176,9 +151,7 @@ const createCulturalMarker = (site, onClick) => {
   const el = document.createElement("div");
   el.className = "cultural-marker";
   el.style.backgroundColor = COLOR_MAP[site.type] || "#3b82f6";
-  el.style.color = COLOR_MAP[site.type] || "#3b82f6";
 
-  const IconComponent = ICON_MAP[site.type] || Camera;
   const iconSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
   iconSvg.setAttribute("width", "22");
   iconSvg.setAttribute("height", "22");
@@ -223,7 +196,7 @@ const createCulturalMarker = (site, onClick) => {
   return el;
 };
 
-const createPopupContent = (site, onClose, onLike) => {
+const createPopupContent = (site, onClose) => {
   const container = document.createElement("div");
   container.style.width = "340px";
   container.style.fontFamily = "system-ui, -apple-system, sans-serif";
@@ -255,15 +228,12 @@ const createPopupContent = (site, onClose, onLike) => {
   closeBtn.style.display = "flex";
   closeBtn.style.alignItems = "center";
   closeBtn.style.justifyContent = "center";
-  closeBtn.style.transition = "all 0.2s ease";
   closeBtn.style.lineHeight = "1";
   closeBtn.addEventListener("mouseenter", () => {
     closeBtn.style.background = "rgba(0, 0, 0, 0.8)";
-    closeBtn.style.transform = "scale(1.05)";
   });
   closeBtn.addEventListener("mouseleave", () => {
     closeBtn.style.background = "rgba(0, 0, 0, 0.6)";
-    closeBtn.style.transform = "scale(1)";
   });
   closeBtn.addEventListener("click", onClose);
 
@@ -320,33 +290,24 @@ const createPopupContent = (site, onClose, onLike) => {
   likeBtn.style.display = "flex";
   likeBtn.style.alignItems = "center";
   likeBtn.style.gap = "8px";
-  likeBtn.style.background = "transparent";
+  likeBtn.style.background = "#f3f4f6";
   likeBtn.style.border = "none";
   likeBtn.style.cursor = "pointer";
   likeBtn.style.padding = "8px 12px";
   likeBtn.style.borderRadius = "8px";
-  likeBtn.style.transition = "all 0.2s ease";
   likeBtn.style.fontSize = "15px";
   likeBtn.style.fontWeight = "600";
 
   const heartIcon = document.createElement("span");
+  heartIcon.textContent = "🤍";
   heartIcon.style.fontSize = "20px";
-  heartIcon.style.transition = "transform 0.2s ease";
 
   const likeCount = document.createElement("span");
+  likeCount.textContent = site.initialLikes || 0;
   likeCount.style.color = "#6b7280";
 
   let liked = false;
   let count = site.initialLikes || 0;
-
-  const updateLike = () => {
-    heartIcon.textContent = liked ? "❤️" : "🤍";
-    likeCount.textContent = count;
-    likeBtn.style.background = liked ? "#fee2e2" : "#f3f4f6";
-    likeCount.style.color = liked ? "#dc2626" : "#6b7280";
-  };
-
-  updateLike();
 
   likeBtn.addEventListener("mouseenter", () => {
     likeBtn.style.background = liked ? "#fecaca" : "#e5e7eb";
@@ -358,10 +319,10 @@ const createPopupContent = (site, onClose, onLike) => {
     e.stopPropagation();
     liked = !liked;
     count = liked ? count + 1 : Math.max(0, count - 1);
-    updateLike();
-    heartIcon.style.transform = "scale(1.3)";
-    setTimeout(() => (heartIcon.style.transform = "scale(1)"), 200);
-    if (onLike) onLike(liked, count);
+    heartIcon.textContent = liked ? "❤️" : "🤍";
+    likeCount.textContent = count;
+    likeBtn.style.background = liked ? "#fee2e2" : "#f3f4f6";
+    likeCount.style.color = liked ? "#dc2626" : "#6b7280";
   });
 
   likeBtn.appendChild(heartIcon);
@@ -400,11 +361,11 @@ const Map = ({ onMapReady }) => {
       container: mapContainer.current,
       style:
         "https://api.maptiler.com/maps/streets-v4/style.json?key=jhCcpBmLi8AmPxpV9Clp",
-      center: [27.135, 38.423],
-      zoom: 13,
+      center: [27.135, 38.423], // İzmir center
+      zoom: 11,
       maxBounds: [
-        [26.9, 38.35],
-        [27.35, 38.5],
+        [26.8, 38.1], // southwest corner
+        [27.4, 38.6], // northeast corner
       ],
     });
 
@@ -434,7 +395,6 @@ const Map = ({ onMapReady }) => {
 const CulturalMap = () => {
   const [mapInstance, setMapInstance] = useState(null);
   const [activeMarkerId, setActiveMarkerId] = useState(null);
-  const [selectedSite, setSelectedSite] = useState(null);
   const markersRef = useRef({});
   const popupsRef = useRef({});
 
@@ -450,16 +410,13 @@ const CulturalMap = () => {
         closeButton: false,
         closeOnClick: false,
         maxWidth: "360px",
-        className: "cultural-popup",
       });
 
       const markerEl = createCulturalMarker(site, () => {
         if (activeMarkerId === site.id) {
           setActiveMarkerId(null);
-          setSelectedSite(null);
         } else {
           setActiveMarkerId(site.id);
-          setSelectedSite(site);
         }
       });
 
@@ -470,7 +427,7 @@ const CulturalMap = () => {
         .setLngLat(site.coordinates)
         .addTo(mapInstance);
 
-      markers[site.id] = { marker, element: markerEl, popup };
+      markers[site.id] = { marker, element: markerEl };
       popups[site.id] = popup;
     });
 
@@ -484,43 +441,22 @@ const CulturalMap = () => {
   }, [mapInstance]);
 
   useEffect(() => {
-    if (!mapInstance || !selectedSite) return;
+    if (!mapInstance || !activeMarkerId) {
+      Object.values(markersRef.current).forEach(({ element }) => {
+        element.classList.remove("active");
+      });
+      Object.values(popupsRef.current).forEach((popup) => {
+        popup.remove();
+      });
+      return;
+    }
 
-    const markerData = markersRef.current[selectedSite.id];
-    if (!markerData) return;
+    const markerData = markersRef.current[activeMarkerId];
+    const popup = popupsRef.current[activeMarkerId];
+    const site = CULTURAL_SITES.find((s) => s.id === activeMarkerId);
 
-    const { marker, popup } = markerData;
+    if (!markerData || !popup || !site) return;
 
-    const popupContent = createPopupContent(
-      selectedSite,
-      () => {
-        setActiveMarkerId(null);
-        setSelectedSite(null);
-      },
-      (liked, count) => {
-        console.log(
-          `${selectedSite.name}: ${liked ? "liked" : "unliked"}, count: ${count}`
-        );
-      }
-    );
-
-    popup.setDOMContent(popupContent);
-    popup.setLngLat(selectedSite.coordinates);
-    popup.addTo(mapInstance);
-
-    mapInstance.flyTo({
-      center: selectedSite.coordinates,
-      zoom: 15,
-      duration: 1000,
-      essential: true,
-    });
-
-    return () => {
-      popup.remove();
-    };
-  }, [selectedSite, mapInstance]);
-
-  useEffect(() => {
     Object.entries(markersRef.current).forEach(([id, { element }]) => {
       if (id === activeMarkerId) {
         element.classList.add("active");
@@ -529,48 +465,40 @@ const CulturalMap = () => {
       }
     });
 
-    if (!activeMarkerId && mapInstance) {
-      mapInstance.flyTo({
-        center: [27.135, 38.423],
-        zoom: 13,
-        duration: 1000,
-        essential: true,
-      });
-    }
+    const popupContent = createPopupContent(site, () => {
+      setActiveMarkerId(null);
+    });
 
-    if (activeMarkerId && mapInstance) {
-      const handleMapClick = (e) => {
-        const clickedMarker =
-          e.originalEvent.target.closest(".cultural-marker");
-        if (!clickedMarker) {
-          setActiveMarkerId(null);
-          setSelectedSite(null);
-        }
-      };
-      mapInstance.on("click", handleMapClick);
-      return () => mapInstance.off("click", handleMapClick);
-    }
+    popup.setDOMContent(popupContent);
+    popup.setLngLat(site.coordinates);
+    popup.addTo(mapInstance);
+
+    mapInstance.easeTo({
+      center: site.coordinates,
+      zoom: 15,
+      duration: 800,
+    });
+
+    const handleMapClick = (e) => {
+      const clickedMarker = e.originalEvent.target.closest(".cultural-marker");
+      if (!clickedMarker) {
+        setActiveMarkerId(null);
+      }
+    };
+
+    mapInstance.on("click", handleMapClick);
+
+    return () => {
+      mapInstance.off("click", handleMapClick);
+      popup.remove();
+    };
   }, [activeMarkerId, mapInstance]);
 
   return (
     <div className="relative w-full h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Map onMapReady={setMapInstance} />
 
-      {/* Header */}
       <div className="absolute top-6 left-6 right-6 flex items-start justify-between gap-4 pointer-events-none">
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-6 max-w-md pointer-events-auto border border-gray-100">
-          <div className="flex items-center gap-3 mb-2">
-            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
-              <MapPin className="w-5 h-5 text-white" />
-            </div>
-            <h1 className="text-2xl font-bold text-gray-900">İzmir Heritage</h1>
-          </div>
-          <p className="text-sm text-gray-600 leading-relaxed">
-            Discover İzmir's rich cultural tapestry through interactive
-            exploration of historic landmarks and local treasures
-          </p>
-        </div>
-
         <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-5 pointer-events-auto border border-gray-100">
           <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
             Categories
@@ -579,17 +507,14 @@ const CulturalMap = () => {
             {Object.entries(COLOR_MAP).map(([type, color]) => {
               const Icon = ICON_MAP[type] || Camera;
               return (
-                <div
-                  key={type}
-                  className="flex items-center gap-3 group cursor-pointer"
-                >
+                <div key={type} className="flex items-center gap-3">
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center border-2 border-white shadow-md transition-transform group-hover:scale-110"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center border-2 border-white shadow-md"
                     style={{ backgroundColor: color }}
                   >
                     <Icon className="w-4 h-4 text-white" />
                   </div>
-                  <span className="text-sm font-medium text-gray-700 capitalize group-hover:text-gray-900 transition-colors">
+                  <span className="text-sm font-medium text-gray-700 capitalize">
                     {type}
                   </span>
                 </div>
@@ -599,10 +524,9 @@ const CulturalMap = () => {
         </div>
       </div>
 
-      {/* Site Counter */}
       <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-lg rounded-xl shadow-lg px-5 py-3 pointer-events-auto border border-gray-100">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
           <span className="text-sm font-semibold text-gray-900">
             {CULTURAL_SITES.length} Cultural Sites
           </span>
