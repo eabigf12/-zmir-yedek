@@ -1,8 +1,100 @@
 import { useEffect, useRef, useState } from "react";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import {
+  Coffee,
+  UtensilsCrossed,
+  Landmark,
+  Church,
+  ShoppingBag,
+  Camera,
+  X,
+  Heart,
+  MapPin,
+} from "lucide-react";
 
-// inject aesthetic marker CSS once
+const CULTURAL_SITES = [
+  {
+    id: "kordon",
+    name: "Kordon",
+    type: "landmark",
+    coordinates: [27.138, 38.4192],
+    description:
+      "Historic waterfront promenade, symbol of İzmir's modern identity",
+    image:
+      "https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=400&h=300&fit=crop",
+    initialLikes: 12,
+  },
+  {
+    id: "agora",
+    name: "Ancient Agora",
+    type: "historical",
+    coordinates: [27.14, 38.418],
+    description: "Roman marketplace ruins from 2nd century AD",
+    image:
+      "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=400&h=300&fit=crop",
+    initialLikes: 18,
+  },
+  {
+    id: "kemeralti",
+    name: "Kemeraltı Bazaar",
+    type: "shopping",
+    coordinates: [27.128, 38.419],
+    description: "Traditional marketplace dating back to the 17th century",
+    image:
+      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
+    initialLikes: 8,
+  },
+  {
+    id: "boyoz-cafe",
+    name: "Traditional Boyoz Place",
+    type: "restaurant",
+    coordinates: [27.142, 38.423],
+    description: "Famous for İzmir's iconic pastry - Boyoz",
+    image:
+      "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&h=300&fit=crop",
+    initialLikes: 20,
+  },
+  {
+    id: "asansor",
+    name: "Historical Elevator",
+    type: "landmark",
+    coordinates: [27.127, 38.428],
+    description: "Built in 1907, connects lower and upper parts of the city",
+    image:
+      "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=400&h=300&fit=crop",
+    initialLikes: 15,
+  },
+  {
+    id: "alsancak",
+    name: "Alsancak Neighborhood",
+    type: "cafe",
+    coordinates: [27.145, 38.436],
+    description: "Vibrant cultural district with cafes and historic buildings",
+    image:
+      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&h=300&fit=crop",
+    initialLikes: 6,
+  },
+];
+
+const ICON_MAP = {
+  restaurant: UtensilsCrossed,
+  cafe: Coffee,
+  landmark: Landmark,
+  historical: Church,
+  shopping: ShoppingBag,
+  photo: Camera,
+};
+
+const COLOR_MAP = {
+  restaurant: "#ef4444",
+  cafe: "#f59e0b",
+  landmark: "#3b82f6",
+  historical: "#8b5cf6",
+  shopping: "#ec4899",
+  photo: "#10b981",
+};
+
 if (
   typeof document !== "undefined" &&
   !document.getElementById("custom-marker-styles")
@@ -10,103 +102,293 @@ if (
   const style = document.createElement("style");
   style.id = "custom-marker-styles";
   style.textContent = `
-    .custom-marker-wrapper {
-      position: relative;
+    @keyframes markerPulse {
+      0%, 100% { transform: scale(1); }
+      50% { transform: scale(1.05); }
+    }
+    
+    .cultural-marker {
       width: 40px;
       height: 40px;
-      display: flex;
-      align-items: center;
-      justify-content: center;
-      pointer-events: auto;
-    }
-    .custom-marker {
-      position: relative;
-      width: 14px;
-      height: 14px;
       border-radius: 50%;
-      background: linear-gradient(135deg, #2563eb 0%, rgba(37,99,235,0.85) 60%);
-      box-shadow: 0 6px 14px rgba(16,24,40,0.18), inset 0 -2px 6px rgba(255,255,255,0.06);
-      transition: transform 160ms ease, width 160ms ease, height 160ms ease, border-radius 160ms ease, box-shadow 160ms ease;
       display: flex;
       align-items: center;
       justify-content: center;
+      cursor: pointer;
+      transition: transform 0.2s ease, box-shadow 0.2s ease;
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
+      border: 3px solid white;
+      position: relative;
     }
-    .custom-marker::after {
-      content: "";
+    
+    .cultural-marker::before {
+      content: '';
       position: absolute;
-      left: 50%;
-      top: 50%;
-      transform: translate(-50%, -50%) scale(0.9);
-      width: 34px;
-      height: 34px;
+      inset: -8px;
       border-radius: 50%;
-      background: radial-gradient(circle at center, rgba(37,99,235,0.12), rgba(37,99,235,0.02));
+      background: radial-gradient(circle, currentColor 0%, transparent 70%);
       opacity: 0;
-      transition: opacity 160ms ease, transform 160ms ease;
-      pointer-events: none;
+      transition: opacity 0.3s ease;
     }
-    .custom-marker:hover {
-      transform: translateY(-3px) scale(1.05);
-      box-shadow: 0 10px 24px rgba(16,24,40,0.22);
+    
+    .cultural-marker:hover {
+      transform: scale(1.15) translateY(-2px);
+      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.25);
     }
-    .custom-marker:hover::after { opacity: 1; transform: translate(-50%, -50%) scale(1); }
-    .custom-marker.open {
-      width: 40px;
-      height: 40px;
-      border-radius: 6px;
-      transform: none;
+    
+    .cultural-marker:hover::before {
+      opacity: 0.15;
     }
-    .custom-marker .marker-inner {
-      width: 8px;
-      height: 8px;
-      border-radius: 50%;
-      background: rgba(255,255,255,0.9);
-      box-shadow: 0 1px 0 rgba(0,0,0,0.06) inset;
+    
+    .cultural-marker.active {
+      transform: scale(1.2) translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.3);
+      border-width: 3px;
     }
-    /* red variant helper */
-    .custom-marker.red {
-      background: linear-gradient(135deg, #ef4444 0%, rgba(239,68,68,0.9) 60%);
+    
+    .cultural-marker svg {
+      color: white;
+      width: 22px;
+      height: 22px;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+    }
+
+    .maplibregl-popup-content {
+      padding: 0 !important;
+      border-radius: 16px !important;
+      overflow: hidden;
+      box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
+      background: white;
+    }
+    
+    .maplibregl-popup-close-button {
+      display: none !important;
+    }
+    
+    .maplibregl-popup-tip {
+      border-top-color: white !important;
     }
   `;
   document.head.appendChild(style);
 }
 
-// pdfjs (Vite-friendly)
-import { getDocument, GlobalWorkerOptions } from "pdfjs-dist/legacy/build/pdf";
-GlobalWorkerOptions.workerSrc = new URL(
-  "pdfjs-dist/build/pdf.worker.min.js",
-  import.meta.url
-).toString();
+const createCulturalMarker = (site, onClick) => {
+  const el = document.createElement("div");
+  el.className = "cultural-marker";
+  el.style.backgroundColor = COLOR_MAP[site.type] || "#3b82f6";
+  el.style.color = COLOR_MAP[site.type] || "#3b82f6";
 
-// helper: render first page -> dataURL (accepts Blob, blob: URL or normal URL)
-async function renderPdfPageToDataUrl(src, pageNumber = 1, scale = 1.0) {
-  // Normalize source: if blob: URL fetch ArrayBuffer, if Blob use arrayBuffer, else pass URL string
-  let loadingTask;
-  if (src instanceof Blob) {
-    const arr = await src.arrayBuffer();
-    loadingTask = getDocument({ data: arr });
-  } else if (typeof src === "string" && src.startsWith("blob:")) {
-    const res = await fetch(src);
-    if (!res.ok) throw new Error("Failed to fetch blob URL for preview");
-    const arr = await res.arrayBuffer();
-    loadingTask = getDocument({ data: arr });
-  } else if (typeof src === "string") {
-    loadingTask = getDocument(src);
-  } else {
-    // fallback: try passing through (could be {data:...} already)
-    loadingTask = getDocument(src);
+  const IconComponent = ICON_MAP[site.type] || Camera;
+  const iconSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
+  iconSvg.setAttribute("width", "22");
+  iconSvg.setAttribute("height", "22");
+  iconSvg.setAttribute("viewBox", "0 0 24 24");
+  iconSvg.setAttribute("fill", "none");
+  iconSvg.setAttribute("stroke", "white");
+  iconSvg.setAttribute("stroke-width", "2");
+  iconSvg.setAttribute("stroke-linecap", "round");
+  iconSvg.setAttribute("stroke-linejoin", "round");
+
+  const iconPaths = {
+    restaurant:
+      "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7",
+    cafe: "M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4ZM6 2v2M10 2v2M14 2v2",
+    landmark: "M3 21h18M6 21V7m12 14V7m-2 0V3H8v4M2 7h20M8 3h8",
+    historical:
+      "m2 12 8-8 8 8M3 21h18M6 21V9m12 12V9M9 6h6M9 9h6M9 12h6M9 15h6",
+    shopping:
+      "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0",
+    photo:
+      "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z",
+  };
+
+  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
+  path.setAttribute("d", iconPaths[site.type] || iconPaths.photo);
+  iconSvg.appendChild(path);
+
+  if (site.type === "cafe") {
+    const circle = document.createElementNS(
+      "http://www.w3.org/2000/svg",
+      "circle"
+    );
+    circle.setAttribute("cx", "9");
+    circle.setAttribute("cy", "13");
+    circle.setAttribute("r", "1");
+    iconSvg.appendChild(circle);
   }
 
-  const pdf = await loadingTask.promise;
-  const page = await pdf.getPage(pageNumber);
-  const viewport = page.getViewport({ scale });
-  const canvas = document.createElement("canvas");
-  canvas.width = Math.round(viewport.width);
-  canvas.height = Math.round(viewport.height);
-  const ctx = canvas.getContext("2d");
-  await page.render({ canvasContext: ctx, viewport }).promise;
-  return canvas.toDataURL("image/png");
-}
+  el.appendChild(iconSvg);
+  el.addEventListener("click", onClick);
+
+  return el;
+};
+
+const createPopupContent = (site, onClose, onLike) => {
+  const container = document.createElement("div");
+  container.style.width = "340px";
+  container.style.fontFamily = "system-ui, -apple-system, sans-serif";
+  container.style.position = "relative";
+
+  const img = document.createElement("img");
+  img.src = site.image;
+  img.alt = site.name;
+  img.style.width = "100%";
+  img.style.height = "220px";
+  img.style.objectFit = "cover";
+  img.style.display = "block";
+
+  const closeBtn = document.createElement("button");
+  closeBtn.innerHTML = "×";
+  closeBtn.style.position = "absolute";
+  closeBtn.style.top = "12px";
+  closeBtn.style.right = "12px";
+  closeBtn.style.width = "32px";
+  closeBtn.style.height = "32px";
+  closeBtn.style.borderRadius = "50%";
+  closeBtn.style.background = "rgba(0, 0, 0, 0.6)";
+  closeBtn.style.backdropFilter = "blur(10px)";
+  closeBtn.style.border = "none";
+  closeBtn.style.color = "white";
+  closeBtn.style.fontSize = "24px";
+  closeBtn.style.fontWeight = "300";
+  closeBtn.style.cursor = "pointer";
+  closeBtn.style.display = "flex";
+  closeBtn.style.alignItems = "center";
+  closeBtn.style.justifyContent = "center";
+  closeBtn.style.transition = "all 0.2s ease";
+  closeBtn.style.lineHeight = "1";
+  closeBtn.addEventListener("mouseenter", () => {
+    closeBtn.style.background = "rgba(0, 0, 0, 0.8)";
+    closeBtn.style.transform = "scale(1.05)";
+  });
+  closeBtn.addEventListener("mouseleave", () => {
+    closeBtn.style.background = "rgba(0, 0, 0, 0.6)";
+    closeBtn.style.transform = "scale(1)";
+  });
+  closeBtn.addEventListener("click", onClose);
+
+  const content = document.createElement("div");
+  content.style.padding = "20px";
+
+  const header = document.createElement("div");
+  header.style.display = "flex";
+  header.style.alignItems = "flex-start";
+  header.style.justifyContent = "space-between";
+  header.style.marginBottom = "12px";
+  header.style.gap = "12px";
+
+  const titleSection = document.createElement("div");
+  titleSection.style.flex = "1";
+
+  const title = document.createElement("h3");
+  title.textContent = site.name;
+  title.style.margin = "0 0 6px 0";
+  title.style.fontSize = "20px";
+  title.style.fontWeight = "700";
+  title.style.color = "#111827";
+  title.style.lineHeight = "1.3";
+
+  const typeLabel = document.createElement("span");
+  typeLabel.textContent =
+    site.type.charAt(0).toUpperCase() + site.type.slice(1);
+  typeLabel.style.display = "inline-block";
+  typeLabel.style.padding = "4px 10px";
+  typeLabel.style.borderRadius = "6px";
+  typeLabel.style.fontSize = "12px";
+  typeLabel.style.fontWeight = "600";
+  typeLabel.style.color = COLOR_MAP[site.type] || "#3b82f6";
+  typeLabel.style.background = (COLOR_MAP[site.type] || "#3b82f6") + "15";
+
+  titleSection.appendChild(title);
+  titleSection.appendChild(typeLabel);
+
+  const desc = document.createElement("p");
+  desc.textContent = site.description;
+  desc.style.margin = "0 0 16px 0";
+  desc.style.fontSize = "15px";
+  desc.style.color = "#4b5563";
+  desc.style.lineHeight = "1.6";
+
+  const footer = document.createElement("div");
+  footer.style.display = "flex";
+  footer.style.alignItems = "center";
+  footer.style.justifyContent = "space-between";
+  footer.style.paddingTop = "16px";
+  footer.style.borderTop = "1px solid #e5e7eb";
+
+  const likeBtn = document.createElement("button");
+  likeBtn.style.display = "flex";
+  likeBtn.style.alignItems = "center";
+  likeBtn.style.gap = "8px";
+  likeBtn.style.background = "transparent";
+  likeBtn.style.border = "none";
+  likeBtn.style.cursor = "pointer";
+  likeBtn.style.padding = "8px 12px";
+  likeBtn.style.borderRadius = "8px";
+  likeBtn.style.transition = "all 0.2s ease";
+  likeBtn.style.fontSize = "15px";
+  likeBtn.style.fontWeight = "600";
+
+  const heartIcon = document.createElement("span");
+  heartIcon.style.fontSize = "20px";
+  heartIcon.style.transition = "transform 0.2s ease";
+
+  const likeCount = document.createElement("span");
+  likeCount.style.color = "#6b7280";
+
+  let liked = false;
+  let count = site.initialLikes || 0;
+
+  const updateLike = () => {
+    heartIcon.textContent = liked ? "❤️" : "🤍";
+    likeCount.textContent = count;
+    likeBtn.style.background = liked ? "#fee2e2" : "#f3f4f6";
+    likeCount.style.color = liked ? "#dc2626" : "#6b7280";
+  };
+
+  updateLike();
+
+  likeBtn.addEventListener("mouseenter", () => {
+    likeBtn.style.background = liked ? "#fecaca" : "#e5e7eb";
+  });
+  likeBtn.addEventListener("mouseleave", () => {
+    likeBtn.style.background = liked ? "#fee2e2" : "#f3f4f6";
+  });
+  likeBtn.addEventListener("click", (e) => {
+    e.stopPropagation();
+    liked = !liked;
+    count = liked ? count + 1 : Math.max(0, count - 1);
+    updateLike();
+    heartIcon.style.transform = "scale(1.3)";
+    setTimeout(() => (heartIcon.style.transform = "scale(1)"), 200);
+    if (onLike) onLike(liked, count);
+  });
+
+  likeBtn.appendChild(heartIcon);
+  likeBtn.appendChild(likeCount);
+
+  const locationInfo = document.createElement("div");
+  locationInfo.style.display = "flex";
+  locationInfo.style.alignItems = "center";
+  locationInfo.style.gap = "4px";
+  locationInfo.style.color = "#9ca3af";
+  locationInfo.style.fontSize = "13px";
+  locationInfo.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>İzmir, Turkey</span>`;
+
+  footer.appendChild(likeBtn);
+  footer.appendChild(locationInfo);
+
+  header.appendChild(titleSection);
+  content.appendChild(header);
+  content.appendChild(desc);
+  content.appendChild(footer);
+
+  container.appendChild(img);
+  container.appendChild(closeBtn);
+  container.appendChild(content);
+
+  return container;
+};
 
 const Map = ({ onMapReady }) => {
   const mapContainer = useRef(null);
@@ -118,68 +400,18 @@ const Map = ({ onMapReady }) => {
       container: mapContainer.current,
       style:
         "https://api.maptiler.com/maps/streets-v4/style.json?key=jhCcpBmLi8AmPxpV9Clp",
-      center: [27.138, 38.4192],
-      zoom: 11.5,
+      center: [27.135, 38.423],
+      zoom: 13,
       maxBounds: [
-        [25.6, 37.6],
-        [28.4, 39.5],
+        [26.9, 38.35],
+        [27.35, 38.5],
       ],
     });
 
-    // custom zoom control (keeps previous)
-    class SimpleZoomControl {
-      onAdd(mapInstance) {
-        this._map = mapInstance;
-        this._container = document.createElement("div");
-        this._container.className = "maplibregl-ctrl maplibregl-ctrl-group";
-        Object.assign(this._container.style, {
-          display: "flex",
-          flexDirection: "column",
-          background: "rgba(255,255,255,0.9)",
-          borderRadius: "6px",
-          boxShadow: "0 1px 4px rgba(0,0,0,0.3)",
-          overflow: "hidden",
-          margin: "8px",
-        });
-        const btnStyle = {
-          width: "36px",
-          height: "36px",
-          border: "none",
-          background: "transparent",
-          cursor: "pointer",
-          fontSize: "18px",
-          lineHeight: "36px",
-          textAlign: "center",
-          padding: "0",
-        };
-        const zoomIn = document.createElement("button");
-        zoomIn.innerText = "+";
-        Object.assign(zoomIn.style, btnStyle);
-        zoomIn.title = "Zoom in";
-        zoomIn.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this._map.zoomTo(this._map.getZoom() + 1, { duration: 300 });
-        });
-        const zoomOut = document.createElement("button");
-        zoomOut.innerText = "−";
-        Object.assign(zoomOut.style, btnStyle);
-        zoomOut.title = "Zoom out";
-        zoomOut.addEventListener("click", (e) => {
-          e.stopPropagation();
-          this._map.zoomTo(this._map.getZoom() - 1, { duration: 300 });
-        });
-        this._container.appendChild(zoomIn);
-        this._container.appendChild(zoomOut);
-        return this._container;
-      }
-      onRemove() {
-        if (this._container && this._container.parentNode) {
-          this._container.parentNode.removeChild(this._container);
-        }
-        this._map = undefined;
-      }
-    }
-    map.addControl(new SimpleZoomControl(), "bottom-left");
+    map.addControl(
+      new maplibregl.NavigationControl({ showCompass: false }),
+      "bottom-left"
+    );
 
     map.on("style.load", () => {
       const style = map.getStyle();
@@ -196,386 +428,188 @@ const Map = ({ onMapReady }) => {
     return () => map.remove();
   }, [onMapReady]);
 
-  return (
-    <div
-      ref={mapContainer}
-      className="w-full h-full"
-      style={{ width: "100%", height: "100vh" }}
-    />
-  );
+  return <div ref={mapContainer} className="w-full h-screen" />;
 };
 
-const DashBoard = () => {
+const CulturalMap = () => {
   const [mapInstance, setMapInstance] = useState(null);
-
-  // use React state to track which marker is open: "izmir" | "narlidere" | null
-  const [openMarker, setOpenMarker] = useState(null);
-  const openRef = useRef(null);
-  // keep a stable setter that updates ref + state
-  const setOpen = (val) => {
-    openRef.current = val;
-    setOpenMarker(val);
-  };
-
-  // refs to DOM/Map objects so we can manage them from useEffect that watches openMarker
-  const izmirCircleRef = useRef(null);
-  const narlidereCircleRef = useRef(null);
-  const popupIzmirRef = useRef(null);
-  const popupNarlidereRef = useRef(null);
-  const izmirMarkerRef = useRef(null);
-  const narlidereMarkerRef = useRef(null);
-  const pdfBlobUrlRef = useRef(null);
+  const [activeMarkerId, setActiveMarkerId] = useState(null);
+  const [selectedSite, setSelectedSite] = useState(null);
+  const markersRef = useRef({});
+  const popupsRef = useRef({});
 
   useEffect(() => {
     if (!mapInstance) return;
 
-    const pdfPath = "/assets/gezginler.pdf"; // public/assets/gezginler.pdf
+    const markers = {};
+    const popups = {};
 
-    // replace the old createMarker with this aesthetic version
-    const createMarker = (color = "#007bff") => {
-      const wrapper = document.createElement("div");
-      wrapper.className = "custom-marker-wrapper";
+    CULTURAL_SITES.forEach((site) => {
+      const popup = new maplibregl.Popup({
+        offset: 30,
+        closeButton: false,
+        closeOnClick: false,
+        maxWidth: "360px",
+        className: "cultural-popup",
+      });
 
-      const circle = document.createElement("div");
-      circle.className = "custom-marker";
-      // apply red class for red color input to keep consistent gradient
-      if (
-        color === "#ff3b30" ||
-        color.toLowerCase().includes("ff3b30") ||
-        color.toLowerCase().includes("red")
-      ) {
-        circle.classList.add("red");
-      } else {
-        // allow custom color by setting inline gradient fallback
-        circle.style.background = `linear-gradient(135deg, ${color} 0%, rgba(0,0,0,0.08) 60%)`;
-      }
-
-      // small white inner dot for contrast
-      const inner = document.createElement("div");
-      inner.className = "marker-inner";
-      circle.appendChild(inner);
-
-      // keep initial sizing inline so existing open/revert logic still works
-      circle.style.width = "14px";
-      circle.style.height = "14px";
-      circle.style.borderRadius = "50%";
-
-      wrapper.appendChild(circle);
-
-      return { wrapper, circle };
-    };
-
-    const izmir = createMarker("#007bff");
-    const narlidere = createMarker("#ff3b30");
-
-    // store circle DOM refs so other effects can toggle classes
-    izmirCircleRef.current = izmir.circle;
-    narlidereCircleRef.current = narlidere.circle;
-
-    let izmirMarker = null;
-    let narlidereMarker = null;
-    let popupIzmir = null;
-    let popupNarlidere = null;
-    let pdfBlobUrl = null;
-
-    // create popup content: will render thumbnail image inside popup and include like button
-    const createPopupContentWithPreview = (blobUrl, initialLikes = 0) => {
-      const container = document.createElement("div");
-      container.style.position = "relative";
-      container.style.width = "360px";
-      container.style.height = "480px";
-      container.style.boxSizing = "border-box";
-      container.style.background = "#fff";
-
-      const img = document.createElement("img");
-      img.alt = "PDF preview";
-      img.style.width = "100%";
-      img.style.height = "100%";
-      img.style.objectFit = "contain";
-      img.style.display = "block";
-      // loading placeholder
-      img.src =
-        "data:image/svg+xml;charset=UTF-8," +
-        encodeURIComponent(
-          `<svg xmlns='http://www.w3.org/2000/svg' width='360' height='480'><rect width='100%' height='100%' fill='#f3f4f6'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#9ca3af' font-size='16'>Loading preview…</text></svg>`
-        );
-
-      // like button inside popup at bottom-right
-      const likeBtn = document.createElement("button");
-      likeBtn.style.position = "absolute";
-      likeBtn.style.right = "8px";
-      likeBtn.style.bottom = "8px";
-      likeBtn.style.width = "36px";
-      likeBtn.style.height = "36px";
-      likeBtn.style.borderRadius = "18px";
-      likeBtn.style.border = "none";
-      likeBtn.style.background = "white";
-      likeBtn.style.boxShadow = "0 1px 4px rgba(0,0,0,0.2)";
-      likeBtn.style.cursor = "pointer";
-      likeBtn.style.display = "flex";
-      likeBtn.style.alignItems = "center";
-      likeBtn.style.justifyContent = "center";
-      likeBtn.style.fontSize = "16px";
-      likeBtn.title = "Like";
-
-      const heart = document.createElement("span");
-      heart.innerText = "♡";
-      heart.style.color = "#ff3b30";
-      heart.style.pointerEvents = "none";
-
-      const badge = document.createElement("span");
-      badge.innerText = String(initialLikes);
-      badge.style.position = "absolute";
-      badge.style.top = "-6px";
-      badge.style.right = "-6px";
-      badge.style.minWidth = "18px";
-      badge.style.height = "18px";
-      badge.style.padding = "0 4px";
-      badge.style.borderRadius = "9px";
-      badge.style.background = "#ff3b30";
-      badge.style.color = "white";
-      badge.style.fontSize = "12px";
-      badge.style.display = initialLikes > 0 ? "flex" : "none";
-      badge.style.alignItems = "center";
-      badge.style.justifyContent = "center";
-
-      likeBtn.appendChild(heart);
-      likeBtn.appendChild(badge);
-      container.appendChild(img);
-      container.appendChild(likeBtn);
-
-      // like state
-      let liked = false;
-      let likes = initialLikes;
-      likeBtn.addEventListener("click", (e) => {
-        e.stopPropagation();
-        e.preventDefault();
-        liked = !liked;
-        if (liked) {
-          likes += 1;
-          heart.innerText = "♥";
+      const markerEl = createCulturalMarker(site, () => {
+        if (activeMarkerId === site.id) {
+          setActiveMarkerId(null);
+          setSelectedSite(null);
         } else {
-          likes = Math.max(0, likes - 1);
-          heart.innerText = "♡";
+          setActiveMarkerId(site.id);
+          setSelectedSite(site);
         }
-        badge.innerText = String(likes);
-        badge.style.display = likes > 0 ? "flex" : "none";
       });
 
-      // render preview async
-      renderPdfPageToDataUrl(blobUrl, 1, 1.2)
-        .then((dataUrl) => {
-          img.src = dataUrl;
-        })
-        .catch((err) => {
-          console.error("Preview render failed:", err);
-          // keep placeholder or show fallback text image
-          img.src =
-            "data:image/svg+xml;charset=UTF-8," +
-            encodeURIComponent(
-              `<svg xmlns='http://www.w3.org/2000/svg' width='360' height='480'><rect width='100%' height='100%' fill='#fee2e2'/><text x='50%' y='50%' dominant-baseline='middle' text-anchor='middle' fill='#b91c1c' font-size='14'>Preview failed</text></svg>`
-            );
-        });
-
-      return container;
-    };
-
-    // fetch blob once and create popups with preview
-    fetch(pdfPath)
-      .then((res) => {
-        if (!res.ok) throw new Error("PDF fetch failed: " + res.status);
-        return res.blob();
+      const marker = new maplibregl.Marker({
+        element: markerEl,
+        anchor: "center",
       })
-      .then((blob) => {
-        pdfBlobUrl = URL.createObjectURL(blob);
-        pdfBlobUrlRef.current = pdfBlobUrl;
+        .setLngLat(site.coordinates)
+        .addTo(mapInstance);
 
-        popupIzmir = new maplibregl.Popup({
-          maxWidth: "380px",
-          autoPan: false,
-        }).setDOMContent(createPopupContentWithPreview(pdfBlobUrl, 0));
-        popupNarlidere = new maplibregl.Popup({
-          maxWidth: "380px",
-          autoPan: false,
-        }).setDOMContent(createPopupContentWithPreview(pdfBlobUrl, 0));
+      markers[site.id] = { marker, element: markerEl, popup };
+      popups[site.id] = popup;
+    });
 
-        // store popup refs for external effect
-        popupIzmirRef.current = popupIzmir;
-        popupNarlidereRef.current = popupNarlidere;
+    markersRef.current = markers;
+    popupsRef.current = popups;
 
-        izmirMarker = new maplibregl.Marker({
-          element: izmir.wrapper,
-          anchor: "center",
-        })
-          .setLngLat([27.138, 38.4192])
-          .setPopup(popupIzmir)
-          .addTo(mapInstance);
-
-        narlidereMarker = new maplibregl.Marker({
-          element: narlidere.wrapper,
-          anchor: "center",
-        })
-          .setLngLat([27.0, 38.4])
-          .setPopup(popupNarlidere)
-          .addTo(mapInstance);
-
-        izmirMarkerRef.current = izmirMarker;
-        narlidereMarkerRef.current = narlidereMarker;
-
-        const revert = (circleEl) => {
-          if (!circleEl) return;
-          circleEl.classList.remove("open");
-        };
-
-        // click handlers now only toggle open state (React state)
-        izmir.wrapper.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (openRef.current === "izmir") {
-            setOpen(null);
-            return;
-          }
-          setOpen("izmir");
-        });
-
-        narlidere.wrapper.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (openRef.current === "narlidere") {
-            setOpen(null);
-            return;
-          }
-          setOpen("narlidere");
-        });
-      })
-      .catch((err) => {
-        console.error("Failed to load PDF for marker popups:", err);
-
-        const fallbackPopupIzmir = new maplibregl.Popup({
-          autoPan: false,
-        }).setText("İzmir City Center");
-        const fallbackPopupNarlidere = new maplibregl.Popup({
-          autoPan: false,
-        }).setText("Narlıdere");
-
-        izmirMarker = new maplibregl.Marker({ element: izmir.wrapper })
-          .setLngLat([27.138, 38.4192])
-          .setPopup(fallbackPopupIzmir)
-          .addTo(mapInstance);
-
-        narlidereMarker = new maplibregl.Marker({ element: narlidere.wrapper })
-          .setLngLat([27.0, 38.4])
-          .setPopup(fallbackPopupNarlidere)
-          .addTo(mapInstance);
-
-        izmirMarkerRef.current = izmirMarker;
-        narlidereMarkerRef.current = narlidereMarker;
-
-        izmir.wrapper.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (openRef.current === "izmir") {
-            setOpen(null);
-            return;
-          }
-          setOpen("izmir");
-        });
-
-        narlidere.wrapper.addEventListener("click", (e) => {
-          e.stopPropagation();
-          if (openRef.current === "narlidere") {
-            setOpen(null);
-            return;
-          }
-          setOpen("narlidere");
-        });
-      });
-
-    // cleanup for this effect
     return () => {
-      if (izmirMarkerRef.current) izmirMarkerRef.current.remove();
-      if (narlidereMarkerRef.current) narlidereMarkerRef.current.remove();
-      if (popupIzmirRef.current) popupIzmirRef.current.remove();
-      if (popupNarlidereRef.current) popupNarlidereRef.current.remove();
-      if (pdfBlobUrlRef.current) URL.revokeObjectURL(pdfBlobUrlRef.current);
+      Object.values(markers).forEach(({ marker }) => marker.remove());
+      Object.values(popups).forEach((popup) => popup.remove());
     };
-  }, [mapInstance]); // run when mapInstance available
+  }, [mapInstance]);
 
-  // effect: respond to openMarker state changes (open / close appropriate popup and toggle marker class)
   useEffect(() => {
-    if (!mapInstance) return;
+    if (!mapInstance || !selectedSite) return;
 
-    const izCircle = izmirCircleRef.current;
-    const narCircle = narlidereCircleRef.current;
-    const pIz = popupIzmirRef.current;
-    const pNar = popupNarlidereRef.current;
+    const markerData = markersRef.current[selectedSite.id];
+    if (!markerData) return;
 
-    // helper to close both
-    const closeBoth = () => {
-      pIz?.remove();
-      pNar?.remove();
-      if (izCircle) izCircle.classList.remove("open");
-      if (narCircle) narCircle.classList.remove("open");
+    const { marker, popup } = markerData;
+
+    const popupContent = createPopupContent(
+      selectedSite,
+      () => {
+        setActiveMarkerId(null);
+        setSelectedSite(null);
+      },
+      (liked, count) => {
+        console.log(
+          `${selectedSite.name}: ${liked ? "liked" : "unliked"}, count: ${count}`
+        );
+      }
+    );
+
+    popup.setDOMContent(popupContent);
+    popup.setLngLat(selectedSite.coordinates);
+    popup.addTo(mapInstance);
+
+    mapInstance.flyTo({
+      center: selectedSite.coordinates,
+      zoom: 15,
+      duration: 1000,
+      essential: true,
+    });
+
+    return () => {
+      popup.remove();
     };
+  }, [selectedSite, mapInstance]);
 
-    if (openMarker === "izmir") {
-      // close other
-      pNar?.remove();
-      if (narCircle) narCircle.classList.remove("open");
-
-      // open izmir
-      if (pIz) {
-        pIz.setLngLat([27.138, 38.4192]).addTo(mapInstance);
-        // ensure popup close button will update state
-        const popEl = pIz.getElement();
-        if (popEl) {
-          const closeBtn = popEl.querySelector(
-            ".maplibregl-popup-close-button"
-          );
-          if (closeBtn)
-            closeBtn.addEventListener("click", () => setOpen(null), {
-              once: true,
-            });
-        }
+  useEffect(() => {
+    Object.entries(markersRef.current).forEach(([id, { element }]) => {
+      if (id === activeMarkerId) {
+        element.classList.add("active");
+      } else {
+        element.classList.remove("active");
       }
-      if (izCircle) izCircle.classList.add("open");
+    });
 
-      // close on next map click
-      mapInstance.once("click", () => setOpen(null));
-      return;
+    if (!activeMarkerId && mapInstance) {
+      mapInstance.flyTo({
+        center: [27.135, 38.423],
+        zoom: 13,
+        duration: 1000,
+        essential: true,
+      });
     }
 
-    if (openMarker === "narlidere") {
-      // close other
-      pIz?.remove();
-      if (izCircle) izCircle.classList.remove("open");
-
-      // open narlidere
-      if (pNar) {
-        pNar.setLngLat([27.0, 38.4]).addTo(mapInstance);
-        const popEl = pNar.getElement();
-        if (popEl) {
-          const closeBtn = popEl.querySelector(
-            ".maplibregl-popup-close-button"
-          );
-          if (closeBtn)
-            closeBtn.addEventListener("click", () => setOpen(null), {
-              once: true,
-            });
+    if (activeMarkerId && mapInstance) {
+      const handleMapClick = (e) => {
+        const clickedMarker =
+          e.originalEvent.target.closest(".cultural-marker");
+        if (!clickedMarker) {
+          setActiveMarkerId(null);
+          setSelectedSite(null);
         }
-      }
-      if (narCircle) narCircle.classList.add("open");
-
-      mapInstance.once("click", () => setOpen(null));
-      return;
+      };
+      mapInstance.on("click", handleMapClick);
+      return () => mapInstance.off("click", handleMapClick);
     }
-
-    // openMarker === null => close everything
-    closeBoth();
-  }, [openMarker, mapInstance]);
+  }, [activeMarkerId, mapInstance]);
 
   return (
-    <main className="bg-transparent">
+    <div className="relative w-full h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Map onMapReady={setMapInstance} />
-    </main>
+
+      {/* Header */}
+      <div className="absolute top-6 left-6 right-6 flex items-start justify-between gap-4 pointer-events-none">
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-6 max-w-md pointer-events-auto border border-gray-100">
+          <div className="flex items-center gap-3 mb-2">
+            <div className="w-10 h-10 bg-gradient-to-br from-blue-500 to-purple-600 rounded-xl flex items-center justify-center">
+              <MapPin className="w-5 h-5 text-white" />
+            </div>
+            <h1 className="text-2xl font-bold text-gray-900">İzmir Heritage</h1>
+          </div>
+          <p className="text-sm text-gray-600 leading-relaxed">
+            Discover İzmir's rich cultural tapestry through interactive
+            exploration of historic landmarks and local treasures
+          </p>
+        </div>
+
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-5 pointer-events-auto border border-gray-100">
+          <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
+            Categories
+          </h3>
+          <div className="space-y-2.5">
+            {Object.entries(COLOR_MAP).map(([type, color]) => {
+              const Icon = ICON_MAP[type] || Camera;
+              return (
+                <div
+                  key={type}
+                  className="flex items-center gap-3 group cursor-pointer"
+                >
+                  <div
+                    className="w-8 h-8 rounded-lg flex items-center justify-center border-2 border-white shadow-md transition-transform group-hover:scale-110"
+                    style={{ backgroundColor: color }}
+                  >
+                    <Icon className="w-4 h-4 text-white" />
+                  </div>
+                  <span className="text-sm font-medium text-gray-700 capitalize group-hover:text-gray-900 transition-colors">
+                    {type}
+                  </span>
+                </div>
+              );
+            })}
+          </div>
+        </div>
+      </div>
+
+      {/* Site Counter */}
+      <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-lg rounded-xl shadow-lg px-5 py-3 pointer-events-auto border border-gray-100">
+        <div className="flex items-center gap-2">
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
+          <span className="text-sm font-semibold text-gray-900">
+            {CULTURAL_SITES.length} Cultural Sites
+          </span>
+        </div>
+      </div>
+    </div>
   );
 };
 
-export default DashBoard;
+export default CulturalMap;
