@@ -101,31 +101,53 @@ if (
   style.id = "custom-marker-styles";
   style.textContent = `
     .cultural-marker {
-      width: 40px;
-      height: 40px;
+      width: 12px;
+      height: 12px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.15);
-      border: 3px solid white;
+      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      border: 2px solid white;
+      will-change: transform, width, height;
+      backface-visibility: hidden;
+      -webkit-backface-visibility: hidden;
+      transform: translate3d(0, 0, 0);
     }
     
     .cultural-marker:hover {
+      width: 40px;
+      height: 40px;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      z-index: 100;
+      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                  height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
+                  box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .cultural-marker.active {
       box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
-      border-width: 4px;
+      border-width: 3px;
     }
     
     .cultural-marker svg {
       color: white;
-      width: 22px;
-      height: 22px;
+      width: 24px;
+      height: 24px;
       filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+      opacity: 0;
+      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      pointer-events: none;
+    }
+    
+    .cultural-marker:hover svg {
+      opacity: 1;
+      
+    }
+    
+    .maplibregl-marker {
+      will-change: transform;
     }
 
     .maplibregl-popup-content {
