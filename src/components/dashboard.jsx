@@ -114,7 +114,6 @@ if (
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform: translate3d(0, 0, 0);
-      transition: all 0.2s ease-out;
     }
     
     .cultural-marker:hover {
@@ -122,6 +121,7 @@ if (
       height: 40px;
       box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
       z-index: 100;
+      transition: all 0.2s ease-out;
     }
     
     .cultural-marker.active {
@@ -129,6 +129,7 @@ if (
       height: 40px;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
       border-width: 3px;
+      transition: all 0.2s ease-out;
     }
     
     .cultural-marker svg {
@@ -137,17 +138,13 @@ if (
       height: 22px;
       filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
       opacity: 0;
-      transition: opacity 0.2s ease-out;
       pointer-events: none;
     }
     
     .cultural-marker:hover svg,
     .cultural-marker.active svg {
       opacity: 1;
-    }
-    
-    .maplibregl-marker {
-      will-change: transform;
+      transition: opacity 0.2s ease-out;
     }
 
     .maplibregl-popup-content {
@@ -159,6 +156,7 @@ if (
       opacity: 0;
       transform: translateY(10px) scale(0.95);
       animation: popupFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+      margin-bottom:12px;
     }
     
     @keyframes popupFadeIn {
