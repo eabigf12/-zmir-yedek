@@ -21,7 +21,7 @@ const CULTURAL_SITES = [
       "Historic waterfront promenade, symbol of İzmir's modern identity",
     image:
       "https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=400&h=300&fit=crop",
-    initialLikes: 12,
+    initialLikes: 0,
   },
   {
     id: "agora",
@@ -31,7 +31,7 @@ const CULTURAL_SITES = [
     description: "Roman marketplace ruins from 2nd century AD",
     image:
       "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=400&h=300&fit=crop",
-    initialLikes: 18,
+    initialLikes: 0,
   },
   {
     id: "kemeralti",
@@ -41,7 +41,7 @@ const CULTURAL_SITES = [
     description: "Traditional marketplace dating back to the 17th century",
     image:
       "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
-    initialLikes: 8,
+    initialLikes: 0,
   },
   {
     id: "boyoz-cafe",
@@ -51,7 +51,7 @@ const CULTURAL_SITES = [
     description: "Famous for İzmir's iconic pastry - Boyoz",
     image:
       "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&h=300&fit=crop",
-    initialLikes: 20,
+    initialLikes: 0,
   },
   {
     id: "asansor",
@@ -61,7 +61,7 @@ const CULTURAL_SITES = [
     description: "Built in 1907, connects lower and upper parts of the city",
     image:
       "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=400&h=300&fit=crop",
-    initialLikes: 15,
+    initialLikes: 0,
   },
   {
     id: "alsancak",
@@ -71,7 +71,7 @@ const CULTURAL_SITES = [
     description: "Vibrant cultural district with cafes and historic buildings",
     image:
       "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&h=300&fit=crop",
-    initialLikes: 6,
+    initialLikes: 0,
   },
 ];
 
@@ -108,42 +108,42 @@ if (
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 8px rgba(0, 0, 0, 0.2);
+      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
       border: 2px solid white;
-      will-change: transform, width, height;
+      will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform: translate3d(0, 0, 0);
+      transition: all 0.2s ease-out;
     }
     
     .cultural-marker:hover {
       width: 40px;
       height: 40px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.25);
+      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
       z-index: 100;
-      transition: width 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                  height 0.3s cubic-bezier(0.4, 0, 0.2, 1),
-                  box-shadow 0.3s cubic-bezier(0.4, 0, 0.2, 1);
     }
     
     .cultural-marker.active {
-      box-shadow: 0 8px 20px rgba(0, 0, 0, 0.35);
+      width: 40px;
+      height: 40px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
       border-width: 3px;
     }
     
     .cultural-marker svg {
       color: white;
-      width: 24px;
-      height: 24px;
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.1));
+      width: 22px;
+      height: 22px;
+      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
       opacity: 0;
-      transition: opacity 0.3s cubic-bezier(0.4, 0, 0.2, 1);
+      transition: opacity 0.2s ease-out;
       pointer-events: none;
     }
     
-    .cultural-marker:hover svg {
+    .cultural-marker:hover svg,
+    .cultural-marker.active svg {
       opacity: 1;
-      
     }
     
     .maplibregl-marker {
@@ -156,6 +156,16 @@ if (
       overflow: hidden;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
       background: white;
+      opacity: 0;
+      transform: translateY(10px) scale(0.95);
+      animation: popupFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+    }
+    
+    @keyframes popupFadeIn {
+      to {
+        opacity: 1;
+        transform: translateY(0) scale(1);
+      }
     }
     
     .maplibregl-popup-close-button {
@@ -231,6 +241,14 @@ const createPopupContent = (site, onClose) => {
   img.style.height = "220px";
   img.style.objectFit = "cover";
   img.style.display = "block";
+  img.style.transition = "transform 0.6s cubic-bezier(0.16, 1, 0.3, 1)";
+
+  container.addEventListener("mouseenter", () => {
+    img.style.transform = "scale(1.05)";
+  });
+  container.addEventListener("mouseleave", () => {
+    img.style.transform = "scale(1)";
+  });
 
   const closeBtn = document.createElement("button");
   closeBtn.innerHTML = "×";
@@ -250,12 +268,15 @@ const createPopupContent = (site, onClose) => {
   closeBtn.style.display = "flex";
   closeBtn.style.alignItems = "center";
   closeBtn.style.justifyContent = "center";
+  closeBtn.style.transition = "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
   closeBtn.style.lineHeight = "1";
   closeBtn.addEventListener("mouseenter", () => {
     closeBtn.style.background = "rgba(0, 0, 0, 0.8)";
+    closeBtn.style.transform = "scale(1.1) rotate(90deg)";
   });
   closeBtn.addEventListener("mouseleave", () => {
     closeBtn.style.background = "rgba(0, 0, 0, 0.6)";
+    closeBtn.style.transform = "scale(1)";
   });
   closeBtn.addEventListener("click", onClose);
 
@@ -319,10 +340,13 @@ const createPopupContent = (site, onClose) => {
   likeBtn.style.borderRadius = "8px";
   likeBtn.style.fontSize = "15px";
   likeBtn.style.fontWeight = "600";
+  likeBtn.style.transition = "all 0.3s cubic-bezier(0.16, 1, 0.3, 1)";
 
   const heartIcon = document.createElement("span");
   heartIcon.textContent = "🤍";
   heartIcon.style.fontSize = "20px";
+  heartIcon.style.transition =
+    "transform 0.3s cubic-bezier(0.34, 1.56, 0.64, 1)";
 
   const likeCount = document.createElement("span");
   likeCount.textContent = site.initialLikes || 0;
@@ -333,9 +357,11 @@ const createPopupContent = (site, onClose) => {
 
   likeBtn.addEventListener("mouseenter", () => {
     likeBtn.style.background = liked ? "#fecaca" : "#e5e7eb";
+    likeBtn.style.transform = "scale(1.05)";
   });
   likeBtn.addEventListener("mouseleave", () => {
     likeBtn.style.background = liked ? "#fee2e2" : "#f3f4f6";
+    likeBtn.style.transform = "scale(1)";
   });
   likeBtn.addEventListener("click", (e) => {
     e.stopPropagation();
@@ -345,6 +371,8 @@ const createPopupContent = (site, onClose) => {
     likeCount.textContent = count;
     likeBtn.style.background = liked ? "#fee2e2" : "#f3f4f6";
     likeCount.style.color = liked ? "#dc2626" : "#6b7280";
+    heartIcon.style.transform = "scale(1.4)";
+    setTimeout(() => (heartIcon.style.transform = "scale(1)"), 400);
   });
 
   likeBtn.appendChild(heartIcon);
@@ -383,11 +411,11 @@ const Map = ({ onMapReady }) => {
       container: mapContainer.current,
       style:
         "https://api.maptiler.com/maps/streets-v4/style.json?key=jhCcpBmLi8AmPxpV9Clp",
-      center: [27.135, 38.423], // İzmir center
+      center: [27.135, 38.423],
       zoom: 11,
       maxBounds: [
-        [26.8, 38.1], // southwest corner
-        [27.4, 38.6], // northeast corner
+        [26.8, 38.1],
+        [27.4, 38.6],
       ],
     });
 
@@ -470,6 +498,15 @@ const CulturalMap = () => {
       Object.values(popupsRef.current).forEach((popup) => {
         popup.remove();
       });
+
+      if (!activeMarkerId && mapInstance) {
+        mapInstance.easeTo({
+          center: [27.135, 38.423],
+          zoom: 11,
+          duration: 1200,
+          easing: (t) => t * (2 - t),
+        });
+      }
       return;
     }
 
@@ -493,12 +530,16 @@ const CulturalMap = () => {
 
     popup.setDOMContent(popupContent);
     popup.setLngLat(site.coordinates);
-    popup.addTo(mapInstance);
+
+    setTimeout(() => {
+      popup.addTo(mapInstance);
+    }, 100);
 
     mapInstance.easeTo({
       center: site.coordinates,
       zoom: 15,
-      duration: 800,
+      duration: 1200,
+      easing: (t) => t * (2 - t),
     });
 
     const handleMapClick = (e) => {
@@ -521,22 +562,29 @@ const CulturalMap = () => {
       <Map onMapReady={setMapInstance} />
 
       <div className="absolute top-6 left-6 right-6 flex items-start justify-between gap-4 pointer-events-none">
-        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-5 pointer-events-auto border border-gray-100">
+        <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-5 pointer-events-auto border border-gray-100 animate-slideInRight">
           <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
             Categories
           </h3>
           <div className="space-y-2.5">
-            {Object.entries(COLOR_MAP).map(([type, color]) => {
+            {Object.entries(COLOR_MAP).map(([type, color], index) => {
               const Icon = ICON_MAP[type] || Camera;
               return (
-                <div key={type} className="flex items-center gap-3">
+                <div
+                  key={type}
+                  className="flex items-center gap-3 group cursor-pointer"
+                  style={{
+                    animation: `fadeInUp 0.5s cubic-bezier(0.16, 1, 0.3, 1) forwards ${index * 0.1}s`,
+                    opacity: 0,
+                  }}
+                >
                   <div
-                    className="w-8 h-8 rounded-lg flex items-center justify-center border-2 border-white shadow-md"
+                    className="w-8 h-8 rounded-lg flex items-center justify-center border-2 border-white shadow-md transition-all duration-300 group-hover:scale-110 group-hover:rotate-6"
                     style={{ backgroundColor: color }}
                   >
-                    <Icon className="w-4 h-4 text-white" />
+                    <Icon className="w-4 h-4 text-white transition-transform duration-300 group-hover:scale-110" />
                   </div>
-                  <span className="text-sm font-medium text-gray-700 capitalize">
+                  <span className="text-sm font-medium text-gray-700 capitalize group-hover:text-gray-900 transition-all duration-300 group-hover:translate-x-1">
                     {type}
                   </span>
                 </div>
@@ -546,14 +594,69 @@ const CulturalMap = () => {
         </div>
       </div>
 
-      <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-lg rounded-xl shadow-lg px-5 py-3 pointer-events-auto border border-gray-100">
+      <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-lg rounded-xl shadow-lg px-5 py-3 pointer-events-auto border border-gray-100 animate-slideInBottom">
         <div className="flex items-center gap-2">
-          <div className="w-2 h-2 bg-green-500 rounded-full"></div>
+          <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
           <span className="text-sm font-semibold text-gray-900">
             {CULTURAL_SITES.length} Cultural Sites
           </span>
         </div>
       </div>
+
+      <style>{`
+        @keyframes slideInLeft {
+          from {
+            opacity: 0;
+            transform: translateX(-30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes slideInRight {
+          from {
+            opacity: 0;
+            transform: translateX(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateX(0);
+          }
+        }
+        
+        @keyframes slideInBottom {
+          from {
+            opacity: 0;
+            transform: translateY(30px);
+          }
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        @keyframes fadeInUp {
+          to {
+            opacity: 1;
+            transform: translateY(0);
+          }
+        }
+        
+        .animate-slideInLeft {
+          animation: slideInLeft 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .animate-slideInRight {
+          animation: slideInRight 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards;
+        }
+        
+        .animate-slideInBottom {
+          animation: slideInBottom 0.6s cubic-bezier(0.16, 1, 0.3, 1) forwards 0.3s;
+          opacity: 0;
+        }
+      `}</style>
     </div>
   );
 };
