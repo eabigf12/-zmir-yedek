@@ -37,7 +37,7 @@ const CULTURAL_SITES = [
     id: "kemeralti",
     name: "Kemeraltı Bazaar",
     type: "shopping",
-    coordinates: [27.128, 38.419],
+    coordinates: [27.13081, 38.41921],
     description: "Traditional marketplace dating back to the 17th century",
     image:
       "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
@@ -370,6 +370,7 @@ const createPopupContent = (site, onClose) => {
   return container;
 };
 
+//MAP COMPONENT IMPORTANT!!!!
 const Map = ({ onMapReady }) => {
   const mapContainer = useRef(null);
 
