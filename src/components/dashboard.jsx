@@ -5,9 +5,9 @@ import {
   Coffee,
   UtensilsCrossed,
   Landmark,
-  Church,
+  Building2,
   ShoppingBag,
-  Camera,
+  Sparkles,
   MapPin,
 } from "lucide-react";
 
@@ -79,9 +79,9 @@ const ICON_MAP = {
   restaurant: UtensilsCrossed,
   cafe: Coffee,
   landmark: Landmark,
-  historical: Church,
+  historical: Building2,
   shopping: ShoppingBag,
-  photo: Camera,
+  photo: Sparkles,
 };
 
 const COLOR_MAP = {
@@ -101,50 +101,49 @@ if (
   style.id = "custom-marker-styles";
   style.textContent = `
     .cultural-marker {
-      width: 12px;
-      height: 12px;
+      width: 14px;
+      height: 14px;
       border-radius: 50%;
       display: flex;
       align-items: center;
       justify-content: center;
       cursor: pointer;
-      box-shadow: 0 2px 6px rgba(0, 0, 0, 0.2);
-      border: 2px solid white;
+      box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
+      border: 2.5px solid white;
       will-change: transform;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
       transform: translate3d(0, 0, 0);
+      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     
     .cultural-marker:hover {
-      width: 40px;
-      height: 40px;
-      box-shadow: 0 4px 12px rgba(0, 0, 0, 0.25);
+      width: 44px;
+      height: 44px;
+      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
       z-index: 100;
-      transition: all 0.2s ease-out;
     }
     
     .cultural-marker.active {
-      width: 40px;
-      height: 40px;
-      box-shadow: 0 6px 16px rgba(0, 0, 0, 0.3);
+      width: 44px;
+      height: 44px;
+      box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(0, 0, 0, 0.15);
       border-width: 3px;
-      transition: all 0.2s ease-out;
     }
     
     .cultural-marker svg {
       color: white;
       width: 22px;
       height: 22px;
-      filter: drop-shadow(0 1px 2px rgba(0, 0, 0, 0.15));
+      filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
       opacity: 0;
       pointer-events: none;
+      transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     
     .cultural-marker:hover svg,
     .cultural-marker.active svg {
       opacity: 1;
-      transition: opacity 0.2s ease-out;
     }
 
     .maplibregl-popup-content {
@@ -194,31 +193,28 @@ const createCulturalMarker = (site, onClick) => {
 
   const iconPaths = {
     restaurant:
-      "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2v0a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7",
-    cafe: "M17 8h1a4 4 0 1 1 0 8h-1M3 8h14v9a4 4 0 0 1-4 4H7a4 4 0 0 1-4-4ZM6 2v2M10 2v2M14 2v2",
-    landmark: "M3 21h18M6 21V7m12 14V7m-2 0V3H8v4M2 7h20M8 3h8",
-    historical:
-      "m2 12 8-8 8 8M3 21h18M6 21V9m12 12V9M9 6h6M9 9h6M9 12h6M9 15h6",
+      "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7",
+    cafe: "M10 2v2m4-2v2M6 8h12a2 2 0 0 1 2 2v9a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-9a2 2 0 0 1 2-2Zm11 2h1a4 4 0 0 1 0 8h-1",
+    landmark:
+      "m3 21 18 0M4 18h16M6 18v-4m4 4v-4m4 4v-4m4 4v-4M4 14h16M6 14 12 9 18 14M12 9V6m-2-1h4",
+    historical: "m3 21 18 0M6 18h12M6 18v-8l6-4 6 4v8M10 18v-5h4v5",
     shopping:
       "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0",
     photo:
-      "M14.5 4h-5L7 7H4a2 2 0 0 0-2 2v9a2 2 0 0 0 2 2h16a2 2 0 0 0 2-2V9a2 2 0 0 0-2-2h-3l-2.5-3z",
+      "m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z",
   };
 
-  const path = document.createElementNS("http://www.w3.org/2000/svg", "path");
-  path.setAttribute("d", iconPaths[site.type] || iconPaths.photo);
-  iconSvg.appendChild(path);
-
-  if (site.type === "cafe") {
-    const circle = document.createElementNS(
-      "http://www.w3.org/2000/svg",
-      "circle"
-    );
-    circle.setAttribute("cx", "9");
-    circle.setAttribute("cy", "13");
-    circle.setAttribute("r", "1");
-    iconSvg.appendChild(circle);
-  }
+  const pathData = iconPaths[site.type] || iconPaths.photo;
+  pathData.split(/(?=[Mm])/).forEach((segment) => {
+    if (segment.trim()) {
+      const path = document.createElementNS(
+        "http://www.w3.org/2000/svg",
+        "path"
+      );
+      path.setAttribute("d", segment.trim());
+      iconSvg.appendChild(path);
+    }
+  });
 
   el.appendChild(iconSvg);
   el.addEventListener("click", onClick);
@@ -566,7 +562,7 @@ const CulturalMap = () => {
           </h3>
           <div className="space-y-2.5">
             {Object.entries(COLOR_MAP).map(([type, color], index) => {
-              const Icon = ICON_MAP[type] || Camera;
+              const Icon = ICON_MAP[type] || Sparkles;
               return (
                 <div
                   key={type}
