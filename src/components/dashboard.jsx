@@ -110,11 +110,9 @@ if (
       cursor: pointer;
       box-shadow: 0 3px 8px rgba(0, 0, 0, 0.15), 0 1px 3px rgba(0, 0, 0, 0.1);
       border: 2.5px solid white;
-      will-change: transform;
+      will-change: width, height, box-shadow;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
-      transform: translate3d(0, 0, 0);
-      transition: all 0.35s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
     
     .cultural-marker:hover {
@@ -122,6 +120,7 @@ if (
       height: 44px;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
       z-index: 100;
+      transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
     }
     
     .cultural-marker.active {
@@ -129,6 +128,7 @@ if (
       height: 44px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(0, 0, 0, 0.15);
       border-width: 3px;
+      transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
     }
     
     .cultural-marker svg {
@@ -138,12 +138,13 @@ if (
       filter: drop-shadow(0 1px 3px rgba(0, 0, 0, 0.2));
       opacity: 0;
       pointer-events: none;
-      transition: opacity 0.3s cubic-bezier(0.34, 1.56, 0.64, 1);
+      transition: opacity 0.25s ease;
     }
     
     .cultural-marker:hover svg,
     .cultural-marker.active svg {
       opacity: 1;
+    }s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .maplibregl-popup-content {
