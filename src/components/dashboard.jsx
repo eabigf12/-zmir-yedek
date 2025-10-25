@@ -73,6 +73,15 @@ const CULTURAL_SITES = [
       "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&h=300&fit=crop",
     initialLikes: 0,
   },
+  {
+    id: "ACI",
+    name: "American Collegiate Institute",
+    type: "landmark",
+    coordinates: [27.08974, 38.39501],
+    description: "Historic educational institution with beautiful architecture",
+    image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
+    initialLikes: 0,
+  },
 ];
 
 const ICON_MAP = {
