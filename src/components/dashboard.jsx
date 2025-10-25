@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
 import {
@@ -8,7 +9,6 @@ import {
   Building2,
   ShoppingBag,
   Sparkles,
-  MapPin,
 } from "lucide-react";
 
 const CULTURAL_SITES = [
@@ -122,6 +122,7 @@ if (
       will-change: width, height, box-shadow;
       backface-visibility: hidden;
       -webkit-backface-visibility: hidden;
+      transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
     }
     
     .cultural-marker:hover {
@@ -129,7 +130,6 @@ if (
       height: 44px;
       box-shadow: 0 6px 16px rgba(0, 0, 0, 0.2), 0 3px 6px rgba(0, 0, 0, 0.15);
       z-index: 100;
-      transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
     }
     
     .cultural-marker.active {
@@ -137,7 +137,6 @@ if (
       height: 44px;
       box-shadow: 0 8px 24px rgba(0, 0, 0, 0.25), 0 4px 8px rgba(0, 0, 0, 0.15);
       border-width: 3px;
-      transition: width 0.3s ease, height 0.3s ease, box-shadow 0.3s ease;
     }
     
     .cultural-marker svg {
@@ -153,19 +152,18 @@ if (
     .cultural-marker:hover svg,
     .cultural-marker.active svg {
       opacity: 1;
-    }s cubic-bezier(0.34, 1.56, 0.64, 1);
     }
 
     .maplibregl-popup-content {
       padding: 0 !important;
-      border-radius: 16px !important;
+      border-radius: 12px !important;
       overflow: hidden;
       box-shadow: 0 20px 60px rgba(0, 0, 0, 0.3) !important;
       background: white;
       opacity: 0;
       transform: translateY(10px) scale(0.95);
       animation: popupFadeIn 0.4s cubic-bezier(0.16, 1, 0.3, 1) forwards;
-      margin-bottom:12px;
+      margin-bottom: 12px;
     }
     
     @keyframes popupFadeIn {
@@ -191,44 +189,11 @@ const createCulturalMarker = (site, onClick) => {
   el.className = "cultural-marker";
   el.style.backgroundColor = COLOR_MAP[site.type] || "#3b82f6";
 
-  const iconSvg = document.createElementNS("http://www.w3.org/2000/svg", "svg");
-  iconSvg.setAttribute("width", "22");
-  iconSvg.setAttribute("height", "22");
-  iconSvg.setAttribute("viewBox", "0 0 24 24");
-  iconSvg.setAttribute("fill", "none");
-  iconSvg.setAttribute("stroke", "white");
-  iconSvg.setAttribute("stroke-width", "2");
-  iconSvg.setAttribute("stroke-linecap", "round");
-  iconSvg.setAttribute("stroke-linejoin", "round");
+  const Icon = ICON_MAP[site.type] || Sparkles;
+  const root = createRoot(el);
+  root.render(<Icon size={22} strokeWidth={2} />);
 
-  const iconPaths = {
-    restaurant:
-      "M3 2v7c0 1.1.9 2 2 2h4a2 2 0 0 0 2-2V2M7 2v20M21 15V2a5 5 0 0 0-5 5v6c0 1.1.9 2 2 2h3Zm0 0v7",
-    cafe: "M10 2v2m4-2v2M6 8h12a2 2 0 0 1 2 2v9a4 4 0 0 1-4 4H8a4 4 0 0 1-4-4v-9a2 2 0 0 1 2-2Zm11 2h1a4 4 0 0 1 0 8h-1",
-    landmark:
-      "m3 21 18 0M4 18h16M6 18v-4m4 4v-4m4 4v-4m4 4v-4M4 14h16M6 14 12 9 18 14M12 9V6m-2-1h4",
-    historical: "m3 21 18 0M6 18h12M6 18v-8l6-4 6 4v8M10 18v-5h4v5",
-    shopping:
-      "M6 2 3 6v14a2 2 0 0 0 2 2h14a2 2 0 0 0 2-2V6l-3-4ZM3 6h18M16 10a4 4 0 0 1-8 0",
-    photo:
-      "m12 3-1.912 5.813a2 2 0 0 1-1.275 1.275L3 12l5.813 1.912a2 2 0 0 1 1.275 1.275L12 21l1.912-5.813a2 2 0 0 1 1.275-1.275L21 12l-5.813-1.912a2 2 0 0 1-1.275-1.275L12 3Z",
-  };
-
-  const pathData = iconPaths[site.type] || iconPaths.photo;
-  pathData.split(/(?=[Mm])/).forEach((segment) => {
-    if (segment.trim()) {
-      const path = document.createElementNS(
-        "http://www.w3.org/2000/svg",
-        "path"
-      );
-      path.setAttribute("d", segment.trim());
-      iconSvg.appendChild(path);
-    }
-  });
-
-  el.appendChild(iconSvg);
   el.addEventListener("click", onClick);
-
   return el;
 };
 
