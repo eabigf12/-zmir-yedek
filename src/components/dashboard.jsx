@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
+import { FaTheaterMasks } from "react-icons/fa";
+import { GiGreekTemple } from "react-icons/gi";
 import {
-  Coffee,
   UtensilsCrossed,
   Landmark,
   Building2,
@@ -67,20 +68,85 @@ const CULTURAL_SITES = [
     image: "https://imgur.com/a/O8EdIxR.jpg",
     initialLikes: 0,
   },
+  {
+    id: "Saat Kulesi",
+    name: "İzmir Saat Kulesi",
+    type: "tarihi",
+    coordinates: [27.12885, 38.41881],
+    description: "Konak Meydanı'ndaki ikonik saat kulesi",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
+  {
+    id: "İstinye Park",
+    name: "İstinye Park Alışveriş Merkezi",
+    type: "alışveriş",
+    coordinates: [27.06872, 38.39978],
+    description:
+      "Modern mağazalar ve restoranlarla dolu popüler alışveriş merkezi",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
+  {
+    id: "Kemeraltı",
+    name: "Kemeraltı Çarşısı",
+    type: "alışveriş",
+    coordinates: [27.13251, 38.41895],
+    description: "Tarihi atmosferiyle ünlü geleneksel pazar yeri",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
+  {
+    id: "Saat Kulesi",
+    name: "İzmir Saat Kulesi",
+    type: "tarihi",
+    coordinates: [27.12885, 38.41881],
+    description: "Konak Meydanı'ndaki ikonik saat kulesi",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
+  {
+    id: "Atatürk Kültür Merkezi",
+    name: "Atatürk Kültür Merkezi",
+    type: "kültürel",
+    coordinates: [26.99688, 38.39595],
+    description:
+      "Modern sanat ve kültür etkinliklerine ev sahipliği yapan merkez",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
+  {
+    id: "Göztepe Stadı",
+    name: "Göztepe Stadyumu",
+    type: "simge",
+    coordinates: [27.07577, 38.39649],
+    description: "Futbol maçları ve etkinlikler için popüler stadyum",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
+  {
+    id: "Kültürpark",
+    name: "Kültürpark",
+    type: "simge",
+    coordinates: [27.07577, 38.39649],
+    description: "Futbol maçları ve etkinlikler için popüler stadyum",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
 ];
 
 const ICON_MAP = {
   restoran: UtensilsCrossed,
-  kafe: Coffee,
+  kültürel: FaTheaterMasks,
   simge: Building2,
-  tarihi: Landmark,
+  tarihi: GiGreekTemple,
   alışveriş: ShoppingBag,
   foto: Sparkles,
 };
 
 const COLOR_MAP = {
   restoran: "#ef4444",
-  kafe: "#f59e0b",
+  kültürel: "#f59e0b",
   simge: "#3b82f6",
   tarihi: "#8b5cf6",
   alışveriş: "#ec4899",
@@ -518,7 +584,7 @@ const CulturalMap = () => {
       <div className="absolute top-6 left-6 right-6 flex items-start justify-between gap-4 pointer-events-none">
         <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-5 pointer-events-auto border border-gray-100 animate-slideInRight">
           <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
-            Kategoriler
+            KATEGORİLER
           </h3>
           <div className="space-y-2.5">
             {Object.entries(COLOR_MAP).map(([type, color], index) => {
