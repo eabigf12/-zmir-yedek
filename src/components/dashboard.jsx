@@ -35,16 +35,6 @@ const analytics = getAnalytics(app);
 
 const CULTURAL_SITES = [
   {
-    id: "kordon",
-    name: "Kordon",
-    type: "landmark",
-    coordinates: [27.138, 38.4192],
-    description:
-      "Historic waterfront promenade, symbol of İzmir's modern identity",
-    image: "https://imgur.com/ImuJknz.jpg",
-    initialLikes: 0,
-  },
-  {
     id: "agora",
     name: "Ancient Agora",
     type: "historical",
