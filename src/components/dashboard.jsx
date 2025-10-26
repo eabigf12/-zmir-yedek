@@ -9,16 +9,13 @@ import {
   Building2,
   ShoppingBag,
   Sparkles,
+  Upload,
+  X,
 } from "lucide-react";
-
-// Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
-import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
+import { getStorage, ref, uploadBytes, getDownloadURL } from "firebase/storage";
 
-// Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
+// Your Firebase Configuration
 const firebaseConfig = {
   apiKey: "AIzaSyBf-NRa94w7uEiP5UAVnuC4UOzyLaiHiMs",
   authDomain: "izmir-oyku.firebaseapp.com",
@@ -26,12 +23,12 @@ const firebaseConfig = {
   storageBucket: "izmir-oyku.firebasestorage.app",
   messagingSenderId: "941717806849",
   appId: "1:941717806849:web:d21f94a1295028a2de0500",
-  measurementId: "G-84Y7QFSWGS"
+  measurementId: "G-84Y7QFSWGS",
 };
 
 // Initialize Firebase
 const app = initializeApp(firebaseConfig);
-const analytics = getAnalytics(app);
+const storage = getStorage(app);
 
 const CULTURAL_SITES = [
   {
@@ -101,7 +98,8 @@ const CULTURAL_SITES = [
     type: "landmark",
     coordinates: [27.08974, 38.39501],
     description: "Historic educational institution with beautiful architecture",
-    image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
+    image:
+      "https://images.unsplash.com/photo-1562774053-701939374585?w=400&h=300&fit=crop",
     initialLikes: 0,
   },
   {
@@ -110,7 +108,8 @@ const CULTURAL_SITES = [
     type: "shopping",
     coordinates: [27.07395, 38.47836],
     description: "Karşıyaka'da modern alışveriş deneyimi sunan merkez",
-    image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
+    image:
+      "https://images.unsplash.com/photo-1519567241046-7f570eee3ce6?w=400&h=300&fit=crop",
     initialLikes: 0,
   },
 ];
@@ -214,6 +213,125 @@ if (
   `;
   document.head.appendChild(style);
 }
+
+const ImageUploadModal = ({ isOpen, onClose, onImageUploaded }) => {
+  const [uploading, setUploading] = useState(false);
+  const [preview, setPreview] = useState(null);
+  const [file, setFile] = useState(null);
+  const fileInputRef = useRef(null);
+
+  const handleFileSelect = (e) => {
+    const selectedFile = e.target.files[0];
+    if (!selectedFile) return;
+
+    if (!selectedFile.type.startsWith("image/")) {
+      alert("Please select an image file");
+      return;
+    }
+
+    if (selectedFile.size > 5 * 1024 * 1024) {
+      alert("Image must be smaller than 5MB");
+      return;
+    }
+
+    setFile(selectedFile);
+    const reader = new FileReader();
+    reader.onloadend = () => setPreview(reader.result);
+    reader.readAsDataURL(selectedFile);
+  };
+
+  const handleUpload = async () => {
+    if (!file) return;
+
+    setUploading(true);
+    try {
+      const timestamp = Date.now();
+      const filename = `images/${timestamp}-${file.name}`;
+      const storageRef = ref(storage, filename);
+
+      await uploadBytes(storageRef, file);
+      const downloadURL = await getDownloadURL(storageRef);
+
+      onImageUploaded(downloadURL);
+      onClose();
+      setFile(null);
+      setPreview(null);
+    } catch (error) {
+      console.error("Upload error:", error);
+      alert(
+        "Failed to upload. Make sure Storage is enabled in Firebase Console!\n\nGo to: Build → Storage → Get Started"
+      );
+    } finally {
+      setUploading(false);
+    }
+  };
+
+  if (!isOpen) return null;
+
+  return (
+    <div className="fixed inset-0 bg-black/60 backdrop-blur-sm flex items-center justify-center z-50 p-4">
+      <div className="bg-white rounded-2xl shadow-2xl max-w-md w-full overflow-hidden">
+        <div className="flex items-center justify-between p-6 border-b border-gray-200">
+          <h3 className="text-xl font-bold text-gray-900">Upload Image</h3>
+          <button
+            onClick={onClose}
+            className="p-2 hover:bg-gray-100 rounded-lg transition-colors"
+          >
+            <X size={20} />
+          </button>
+        </div>
+
+        <div className="p-6">
+          {!preview ? (
+            <div
+              onClick={() => fileInputRef.current?.click()}
+              className="border-2 border-dashed border-gray-300 rounded-xl p-12 text-center cursor-pointer hover:border-blue-500 hover:bg-blue-50/50 transition-all"
+            >
+              <Upload size={48} className="mx-auto mb-4 text-gray-400" />
+              <p className="text-gray-600 font-medium mb-2">
+                Click to upload image
+              </p>
+              <p className="text-sm text-gray-500">PNG, JPG, GIF up to 5MB</p>
+              <input
+                ref={fileInputRef}
+                type="file"
+                accept="image/*"
+                onChange={handleFileSelect}
+                className="hidden"
+              />
+            </div>
+          ) : (
+            <div>
+              <img
+                src={preview}
+                alt="Preview"
+                className="w-full h-64 object-cover rounded-xl mb-4"
+              />
+              <div className="flex gap-3">
+                <button
+                  onClick={() => {
+                    setFile(null);
+                    setPreview(null);
+                  }}
+                  className="flex-1 px-4 py-2 border border-gray-300 rounded-lg hover:bg-gray-50 transition-colors"
+                >
+                  Choose Different
+                </button>
+                <button
+                  onClick={handleUpload}
+                  disabled={uploading}
+                  className="flex-1 px-4 py-2 bg-blue-600 text-white rounded-lg hover:bg-blue-700 disabled:bg-gray-400 disabled:cursor-not-allowed transition-colors font-medium"
+                >
+                  {uploading ? "Uploading..." : "Upload"}
+                </button>
+              </div>
+            </div>
+          )}
+        </div>
+      </div>
+    </div>
+  );
+};
 
 const createCulturalMarker = (site, onClick) => {
   const el = document.createElement("div");
@@ -401,7 +519,6 @@ const createPopupContent = (site, onClose) => {
   return container;
 };
 
-//MAP COMPONENT IMPORTANT!!!!
 const Map = ({ onMapReady }) => {
   const mapContainer = useRef(null);
 
@@ -446,6 +563,7 @@ const Map = ({ onMapReady }) => {
 const CulturalMap = () => {
   const [mapInstance, setMapInstance] = useState(null);
   const [activeMarkerId, setActiveMarkerId] = useState(null);
+  const [showUploadModal, setShowUploadModal] = useState(false);
   const markersRef = useRef({});
   const popupsRef = useRef({});
 
@@ -562,6 +680,17 @@ const CulturalMap = () => {
     <div className="relative w-full h-screen bg-gradient-to-br from-gray-50 to-gray-100">
       <Map onMapReady={setMapInstance} />
 
+      <ImageUploadModal
+        isOpen={showUploadModal}
+        onClose={() => setShowUploadModal(false)}
+        onImageUploaded={(url) => {
+          console.log("✅ Image uploaded successfully!");
+          alert(
+            `✅ Image uploaded!\n\nCopy this URL and paste it in your CULTURAL_SITES array:\n\n${url}`
+          );
+        }}
+      />
+
       <div className="absolute top-6 left-6 right-6 flex items-start justify-between gap-4 pointer-events-none">
         <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-5 pointer-events-auto border border-gray-100 animate-slideInRight">
           <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
@@ -593,6 +722,14 @@ const CulturalMap = () => {
             })}
           </div>
         </div>
+
+        <button
+          onClick={() => setShowUploadModal(true)}
+          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-2 font-medium transition-all duration-300 hover:scale-105 pointer-events-auto"
+        >
+          <Upload size={20} />
+          Upload Image
+        </button>
       </div>
 
       <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-lg rounded-xl shadow-lg px-5 py-3 pointer-events-auto border border-gray-100 animate-slideInBottom">
