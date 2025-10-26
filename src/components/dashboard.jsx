@@ -5,6 +5,7 @@ import "maplibre-gl/dist/maplibre-gl.css";
 import { FaMap, FaTheaterMasks } from "react-icons/fa";
 import { GiGreekTemple } from "react-icons/gi";
 import { FaMapLocationDot, FaMountainCity } from "react-icons/fa6";
+import { PiMountainsFill } from "react-icons/pi";
 import {
   UtensilsCrossed,
   Landmark,
@@ -152,7 +153,7 @@ const ICON_MAP = {
   turistik: FaMapLocationDot,
   tarihi: GiGreekTemple,
   alışveriş: ShoppingBag,
-  manzara: FaMountainCity,
+  manzara: PiMountainsFill,
 };
 
 const COLOR_MAP = {
@@ -443,7 +444,7 @@ const Map = ({ onMapReady }) => {
       style:
         "https://api.maptiler.com/maps/streets-v4/style.json?key=jhCcpBmLi8AmPxpV9Clp",
       center: [26.9, 38.423],
-      zoom: 8,
+      zoom: 20,
       maxBounds: [
         [26.16628, 37.95118],
         [27.8, 39.0],
@@ -533,7 +534,7 @@ const CulturalMap = () => {
       if (!activeMarkerId && mapInstance) {
         mapInstance.easeTo({
           center: [27.135, 38.423],
-          zoom: 11,
+          zoom: 10.5,
           duration: 1200,
           easing: (t) => t * (2 - t),
         });
@@ -570,7 +571,7 @@ const CulturalMap = () => {
       center: site.coordinates,
       zoom: 15,
       duration: 1200,
-      easing: (t) => t * (2 - t),
+      easing: (t) => t * (3 - t),
     });
 
     const handleMapClick = (e) => {
