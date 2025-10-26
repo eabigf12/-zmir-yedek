@@ -133,6 +133,16 @@ const CULTURAL_SITES = [
     image: "https://imgur.com/a/O8EdIxR.jpg",
     initialLikes: 0,
   },
+  {
+    id: "Opera ve Bale",
+    name: "İzmir Devlet Opera ve Balesi Necdet Aydın Sahnesi",
+    type: "kültürel",
+    coordinates: [27.21111, 38.46406],
+    description:
+      "Modern sanat ve kültür etkinliklerine ev sahipliği yapan merkez",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
+    initialLikes: 0,
+  },
 ];
 
 const ICON_MAP = {
