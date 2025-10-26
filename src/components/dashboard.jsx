@@ -63,8 +63,8 @@ const CULTURAL_SITES = [
 const ICON_MAP = {
   restoran: UtensilsCrossed,
   kafe: Coffee,
-  simge: Landmark,
-  tarihi: Building2,
+  simge: Building2,
+  tarihi: Landmark,
   alışveriş: ShoppingBag,
   foto: Sparkles,
 };
