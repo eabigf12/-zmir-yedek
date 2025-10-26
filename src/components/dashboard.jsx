@@ -442,11 +442,11 @@ const Map = ({ onMapReady }) => {
       container: mapContainer.current,
       style:
         "https://api.maptiler.com/maps/streets-v4/style.json?key=jhCcpBmLi8AmPxpV9Clp",
-      center: [27.135, 38.423],
-      zoom: 11,
+      center: [26.9, 38.423],
+      zoom: 8,
       maxBounds: [
-        [26.18628, 37.95118],
-        [27.69, 39.0],
+        [26.16628, 37.95118],
+        [27.8, 39.0],
       ],
     });
 
