@@ -26,7 +26,7 @@ const firebaseConfig = {
   storageBucket: "izmir-oyku.firebasestorage.app",
   messagingSenderId: "941717806849",
   appId: "1:941717806849:web:d21f94a1295028a2de0500",
-  measurementId: "G-84Y7QFSWGS"
+  measurementId: "G-84Y7QFSWGS",
 };
 
 // Initialize Firebase
@@ -41,8 +41,7 @@ const CULTURAL_SITES = [
     coordinates: [27.138, 38.4192],
     description:
       "Historic waterfront promenade, symbol of İzmir's modern identity",
-    image:
-      "https://imgur.com/ImuJknz.jpg",
+    image: "https://imgur.com/ImuJknz.jpg",
     initialLikes: 0,
   },
   {
