@@ -722,14 +722,6 @@ const CulturalMap = () => {
             })}
           </div>
         </div>
-
-        <button
-          onClick={() => setShowUploadModal(true)}
-          className="bg-blue-600 hover:bg-blue-700 text-white px-5 py-3 rounded-xl shadow-lg flex items-center gap-2 font-medium transition-all duration-300 hover:scale-105 pointer-events-auto"
-        >
-          <Upload size={20} />
-          Upload Image
-        </button>
       </div>
 
       <div className="absolute bottom-6 left-6 bg-white/95 backdrop-blur-lg rounded-xl shadow-lg px-5 py-3 pointer-events-auto border border-gray-100 animate-slideInBottom">
