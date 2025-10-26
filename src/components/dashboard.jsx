@@ -58,15 +58,6 @@ const CULTURAL_SITES = [
     image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
     initialLikes: 0,
   },
-  {
-    id: "",
-    name: "",
-    type: "",
-    coordinates: [],
-    description: "",
-    image: "",
-    initialLikes: 0,
-  },
 ];
 
 const ICON_MAP = {
