@@ -38,8 +38,7 @@ const CULTURAL_SITES = [
     coordinates: [27.138, 38.4192],
     description:
       "Historic waterfront promenade, symbol of İzmir's modern identity",
-    image:
-      "https://images.unsplash.com/photo-1578932750294-f5075e85f44a?w=400&h=300&fit=crop",
+    image: "https://imgur.com/a/Y6UJUKZ",
     initialLikes: 0,
   },
   {
