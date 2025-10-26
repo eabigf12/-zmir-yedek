@@ -82,6 +82,15 @@ const CULTURAL_SITES = [
     image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
     initialLikes: 0,
   },
+  {
+    id: "Hiltown",
+    name: "Hiltown Alışveriş Merkezi",
+    type: "shopping",
+    coordinates: [27.07395, 38.47836],
+    description: "Karşıyaka'da modern alışveriş deneyimi sunan merkez",
+    image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
+    initialLikes: 0,
+  },
 ];
 
 const ICON_MAP = {
