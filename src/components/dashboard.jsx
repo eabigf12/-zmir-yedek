@@ -46,7 +46,7 @@ const CULTURAL_SITES = [
     type: "simge",
     coordinates: [27.08974, 38.39501],
     description: "Güzel mimarisiyle tarihi eğitim kurumu",
-    image: "https://imgur.com/a/URhEuYb",
+    image: "https://imgur.com/a/CunJwkP.jpg",
     initialLikes: 20,
   },
   {
@@ -72,8 +72,8 @@ const CULTURAL_SITES = [
 const ICON_MAP = {
   restoran: UtensilsCrossed,
   kafe: Coffee,
-  simge: Landmark,
-  tarihi: Building2,
+  simge: Building2,
+  tarihi: Landmark,
   alışveriş: ShoppingBag,
   foto: Sparkles,
 };
