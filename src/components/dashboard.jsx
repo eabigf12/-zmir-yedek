@@ -52,7 +52,7 @@ const CULTURAL_SITES = [
   {
     id: "Hiltown",
     name: "Hiltown Alışveriş Merkezi",
-    type: "alisveris",
+    type: "alışveriş",
     coordinates: [27.07395, 38.47836],
     description: "Karşıyaka'da modern alışveriş deneyimi sunan merkez",
     image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
@@ -65,7 +65,7 @@ const ICON_MAP = {
   kafe: Coffee,
   simge: Landmark,
   tarihi: Building2,
-  alisveris: ShoppingBag,
+  alışveriş: ShoppingBag,
   foto: Sparkles,
 };
 
@@ -74,7 +74,7 @@ const COLOR_MAP = {
   kafe: "#f59e0b",
   simge: "#3b82f6",
   tarihi: "#8b5cf6",
-  alisveris: "#ec4899",
+  alışveriş: "#ec4899",
   foto: "#10b981",
 };
 
