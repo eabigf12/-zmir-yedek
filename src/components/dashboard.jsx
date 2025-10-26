@@ -14,11 +14,8 @@ import {
 // Import the functions you need from the SDKs you need
 import { initializeApp } from "firebase/app";
 import { getAnalytics } from "firebase/analytics";
-// TODO: Add SDKs for Firebase products that you want to use
-// https://firebase.google.com/docs/web/setup#available-libraries
 
 // Your web app's Firebase configuration
-// For Firebase JS SDK v7.20.0 and later, measurementId is optional
 const firebaseConfig = {
   apiKey: "AIzaSyBf-NRa94w7uEiP5UAVnuC4UOzyLaiHiMs",
   authDomain: "izmir-oyku.firebaseapp.com",
@@ -36,26 +33,26 @@ const analytics = getAnalytics(app);
 const CULTURAL_SITES = [
   {
     id: "agora",
-    name: "Ancient Agora",
-    type: "historical",
+    name: "Antik Agora",
+    type: "tarihi",
     coordinates: [27.14, 38.418],
-    description: "Roman marketplace ruins from 2nd century AD",
+    description: "MS 2. yüzyıldan kalma Roma pazaryeri kalıntıları",
     image: "https://imgur.com/q44CsbJ.jpg",
     initialLikes: 0,
   },
   {
     id: "ACI",
-    name: "American Collegiate Institute",
-    type: "landmark",
+    name: "Amerikan Koleji",
+    type: "simge",
     coordinates: [27.08974, 38.39501],
-    description: "Historic educational institution with beautiful architecture",
+    description: "Güzel mimarisiyle tarihi eğitim kurumu",
     image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
     initialLikes: 0,
   },
   {
     id: "Hiltown",
     name: "Hiltown Alışveriş Merkezi",
-    type: "shopping",
+    type: "alisveris",
     coordinates: [27.07395, 38.47836],
     description: "Karşıyaka'da modern alışveriş deneyimi sunan merkez",
     image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
@@ -64,21 +61,21 @@ const CULTURAL_SITES = [
 ];
 
 const ICON_MAP = {
-  restaurant: UtensilsCrossed,
-  cafe: Coffee,
-  landmark: Landmark,
-  historical: Building2,
-  shopping: ShoppingBag,
-  photo: Sparkles,
+  restoran: UtensilsCrossed,
+  kafe: Coffee,
+  simge: Landmark,
+  tarihi: Building2,
+  alisveris: ShoppingBag,
+  foto: Sparkles,
 };
 
 const COLOR_MAP = {
-  restaurant: "#ef4444",
-  cafe: "#f59e0b",
-  landmark: "#3b82f6",
-  historical: "#8b5cf6",
-  shopping: "#ec4899",
-  photo: "#10b981",
+  restoran: "#ef4444",
+  kafe: "#f59e0b",
+  simge: "#3b82f6",
+  tarihi: "#8b5cf6",
+  alisveris: "#ec4899",
+  foto: "#10b981",
 };
 
 if (
@@ -332,7 +329,7 @@ const createPopupContent = (site, onClose) => {
   locationInfo.style.gap = "4px";
   locationInfo.style.color = "#9ca3af";
   locationInfo.style.fontSize = "13px";
-  locationInfo.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>İzmir, Turkey</span>`;
+  locationInfo.innerHTML = `<svg width="14" height="14" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2"><path d="M21 10c0 7-9 13-9 13s-9-6-9-13a9 9 0 0 1 18 0z"></path><circle cx="12" cy="10" r="3"></circle></svg><span>İzmir, Türkiye</span>`;
 
   footer.appendChild(likeBtn);
   footer.appendChild(locationInfo);
@@ -349,7 +346,6 @@ const createPopupContent = (site, onClose) => {
   return container;
 };
 
-//MAP COMPONENT IMPORTANT!!!!
 const Map = ({ onMapReady }) => {
   const mapContainer = useRef(null);
 
@@ -513,7 +509,7 @@ const CulturalMap = () => {
       <div className="absolute top-6 left-6 right-6 flex items-start justify-between gap-4 pointer-events-none">
         <div className="bg-white/95 backdrop-blur-lg rounded-2xl shadow-2xl p-5 pointer-events-auto border border-gray-100 animate-slideInRight">
           <h3 className="font-semibold text-gray-900 mb-4 text-sm uppercase tracking-wide">
-            Categories
+            Kategoriler
           </h3>
           <div className="space-y-2.5">
             {Object.entries(COLOR_MAP).map(([type, color], index) => {
@@ -547,7 +543,7 @@ const CulturalMap = () => {
         <div className="flex items-center gap-2">
           <div className="w-2 h-2 bg-green-500 rounded-full animate-pulse"></div>
           <span className="text-sm font-semibold text-gray-900">
-            {CULTURAL_SITES.length} Cultural Sites
+            {CULTURAL_SITES.length} Kültürel Mekan
           </span>
         </div>
       </div>
