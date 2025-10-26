@@ -64,7 +64,7 @@ const CULTURAL_SITES = [
     type: "simge",
     coordinates: [27.04457, 38.38714],
     description: "Dağa çıkarken İzmir manzarası",
-    image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
+    image: "https://imgur.com/a/O8EdIxR.jpg",
     initialLikes: 0,
   },
 ];
