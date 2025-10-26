@@ -2,8 +2,9 @@ import { useEffect, useRef, useState } from "react";
 import { createRoot } from "react-dom/client";
 import maplibregl from "maplibre-gl";
 import "maplibre-gl/dist/maplibre-gl.css";
-import { FaTheaterMasks } from "react-icons/fa";
+import { FaMap, FaTheaterMasks } from "react-icons/fa";
 import { GiGreekTemple } from "react-icons/gi";
+import { FaMapLocationDot, FaMountainCity } from "react-icons/fa6";
 import {
   UtensilsCrossed,
   Landmark,
@@ -44,7 +45,7 @@ const CULTURAL_SITES = [
   {
     id: "ACI",
     name: "Amerikan Koleji",
-    type: "simge",
+    type: "turistik",
     coordinates: [27.08974, 38.39501],
     description: "Güzel mimarisiyle tarihi eğitim kurumu",
     image: "https://imgur.com/a/CunJwkP.jpg",
@@ -61,8 +62,8 @@ const CULTURAL_SITES = [
   },
   {
     id: "Teleferik",
-    name: "balçıva teleferik tesisleri",
-    type: "simge",
+    name: "Balçova teleferik tesisleri",
+    type: "manzara",
     coordinates: [27.04457, 38.38714],
     description: "Dağa çıkarken İzmir manzarası",
     image: "https://imgur.com/a/O8EdIxR.jpg",
@@ -118,7 +119,7 @@ const CULTURAL_SITES = [
   {
     id: "Göztepe Stadı",
     name: "Göztepe Stadyumu",
-    type: "simge",
+    type: "turistik",
     coordinates: [27.07577, 38.39649],
     description: "Futbol maçları ve etkinlikler için popüler stadyum",
     image: "https://imgur.com/a/O8EdIxR.jpg",
@@ -127,7 +128,7 @@ const CULTURAL_SITES = [
   {
     id: "Kültürpark",
     name: "Kültürpark",
-    type: "simge",
+    type: "turistik",
     coordinates: [27.07577, 38.39649],
     description: "Futbol maçları ve etkinlikler için popüler stadyum",
     image: "https://imgur.com/a/O8EdIxR.jpg",
@@ -148,19 +149,19 @@ const CULTURAL_SITES = [
 const ICON_MAP = {
   restoran: UtensilsCrossed,
   kültürel: FaTheaterMasks,
-  simge: Building2,
+  turistik: FaMapLocationDot,
   tarihi: GiGreekTemple,
   alışveriş: ShoppingBag,
-  foto: Sparkles,
+  manzara: FaMountainCity,
 };
 
 const COLOR_MAP = {
   restoran: "#ef4444",
   kültürel: "#f59e0b",
-  simge: "#3b82f6",
+  turistik: "#3b82f6",
   tarihi: "#8b5cf6",
   alışveriş: "#ec4899",
-  foto: "#10b981",
+  manzara: "#10b981",
 };
 
 if (
