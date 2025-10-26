@@ -51,7 +51,7 @@ const CULTURAL_SITES = [
     coordinates: [27.14, 38.418],
     description: "Roman marketplace ruins from 2nd century AD",
     image:
-      "https://images.unsplash.com/photo-1590073242678-70ee3fc28e8e?w=400&h=300&fit=crop",
+      "https://imgur.com/q44CsbJ.jpg",
     initialLikes: 0,
   },
   {
