@@ -47,7 +47,7 @@ const CULTURAL_SITES = [
     coordinates: [27.08974, 38.39501],
     description: "Güzel mimarisiyle tarihi eğitim kurumu",
     image: "https://share.google/images/kzGiMQ7VJWY3HLMo7",
-    initialLikes: 0,
+    initialLikes: 20,
   },
   {
     id: "Hiltown",
