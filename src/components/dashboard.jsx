@@ -50,48 +50,7 @@ const CULTURAL_SITES = [
     type: "historical",
     coordinates: [27.14, 38.418],
     description: "Roman marketplace ruins from 2nd century AD",
-    image:
-      "https://imgur.com/q44CsbJ.jpg",
-    initialLikes: 0,
-  },
-  {
-    id: "kemeralti",
-    name: "Kemeraltı Bazaar",
-    type: "shopping",
-    coordinates: [27.13081, 38.41921],
-    description: "Traditional marketplace dating back to the 17th century",
-    image:
-      "https://images.unsplash.com/photo-1555396273-367ea4eb4db5?w=400&h=300&fit=crop",
-    initialLikes: 0,
-  },
-  {
-    id: "boyoz-cafe",
-    name: "Traditional Boyoz Place",
-    type: "restaurant",
-    coordinates: [27.142, 38.423],
-    description: "Famous for İzmir's iconic pastry - Boyoz",
-    image:
-      "https://images.unsplash.com/photo-1555507036-ab1f4038808a?w=400&h=300&fit=crop",
-    initialLikes: 0,
-  },
-  {
-    id: "asansor",
-    name: "Historical Elevator",
-    type: "landmark",
-    coordinates: [27.127, 38.428],
-    description: "Built in 1907, connects lower and upper parts of the city",
-    image:
-      "https://images.unsplash.com/photo-1513407030348-c983a97b98d8?w=400&h=300&fit=crop",
-    initialLikes: 0,
-  },
-  {
-    id: "alsancak",
-    name: "Alsancak Neighborhood",
-    type: "cafe",
-    coordinates: [27.145, 38.436],
-    description: "Vibrant cultural district with cafes and historic buildings",
-    image:
-      "https://images.unsplash.com/photo-1554118811-1e0d58224f24?w=400&h=300&fit=crop",
+    image: "https://imgur.com/q44CsbJ.jpg",
     initialLikes: 0,
   },
   {
