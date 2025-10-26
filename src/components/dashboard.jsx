@@ -46,7 +46,7 @@ const CULTURAL_SITES = [
     type: "simge",
     coordinates: [27.08974, 38.39501],
     description: "Güzel mimarisiyle tarihi eğitim kurumu",
-    image: "https://imgur.com/a/URhEuYb.jpg",
+    image: "https://imgur.com/a/CunJwkP.jpg",
     initialLikes: 20,
   },
   {
